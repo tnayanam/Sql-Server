@@ -19,3 +19,29 @@ CMD: sp_renameDB 'Sample3', 'Sample4'
 
 Drop a Database
 CMD: Drop Database Sample4;
+
+Create a Table from GUI in SSMS:
+Once you give all the table column details you can click on top of the tab related to that table column and click on Save.
+Before running any query make sure that in top dropdown correct Database is selected.
+
+Create a Table
+CMD: 
+Create Table tblGender
+(
+ID  int NOT NULL Primary Key,
+Gender nvarchar(50) NOT NULL
+)
+
+Create table to a particular Database via Command
+
+CMD: 
+Use Sample1
+Create Table tblGender
+(
+ID  int NOT NULL Primary Key,
+Gender nvarchar(50) NOT NULL
+)
+
+Foreign Key Constraint
+CMD: Alter Table tblPerson add Constraint tblPerson_GenderID_FK 
+Foreign Key (GenderId) references tblGender(ID);
