@@ -5,3 +5,17 @@ So We need a SQL Server installed in the system. Once that is installed we need 
 		Authentication: Here we can give an authentication to connect. if we give "windows authentication" then we dont need to do anything because we are already logged into the windows. (Best)
 		If we give SQL Server authentication then while installin the Sql Server we must have given one user and password that we need to use.
 		               
+					
+Create Database Manually
+CMD: Create Database SampleDB
+
+Location of Database file. Click on the Database to which you want to explore and right click property and then go to Files and there you will find Path Tab.
+
+Change the Name of the Database
+CMD: Alter Database Sample2 Modify Name = Sample3
+
+Rename Database using System Defined SProc
+CMD: sp_renameDB 'Sample3', 'Sample4'
+
+Drop a Database
+CMD: Drop Database Sample4;
