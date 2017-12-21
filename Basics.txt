@@ -45,3 +45,16 @@ Gender nvarchar(50) NOT NULL
 Foreign Key Constraint
 CMD: Alter Table tblPerson add Constraint tblPerson_GenderID_FK 
 Foreign Key (GenderId) references tblGender(ID);
+
+Default Value in table column
+CMD: Alter Table tblPerson Add Constraint DF_tblPerson_genderId
+DEFAULT 3 FOR GenderId
+
+Insert When not all columns are included
+CMD: Insert INTO tblPerson (ID, Name, Email) values (5, 'Jonny', 'j@J.com')
+
+Insert when all columns are included we dnt need to mentioned column name
+CMD: Insert INTO tblPerson VALUES (6, 'Arun', 'a@a.com', 2)
+
+Drop a constraint
+CMD: ALTER TABLE tblPerson Drop Constraint DF_tblPerson_genderId
