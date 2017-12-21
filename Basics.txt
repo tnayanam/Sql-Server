@@ -58,3 +58,18 @@ CMD: Insert INTO tblPerson VALUES (6, 'Arun', 'a@a.com', 2)
 
 Drop a constraint
 CMD: ALTER TABLE tblPerson Drop Constraint DF_tblPerson_genderId
+
+Cascading Referential Integrity
+
+1. Drop the corresponding child table when primary table is deleted:
+
+CMD: Alter table tblPerson Add Constraint tblPerson_GenderID_FK  Foreign key (GenderId) References tblGender(ID) on delete cascade;
+On Delete cascade if you forgot to add while making the initial Foreign key Relationship then you need to drop the FK constraint and then readd the FK constraint like above. 
+
+2. Set the corresponding Foreign key to NULL value and keep rest of the row value intact
+CMD: Alter table tblPerson Add Constraint tblPerson_GenderID_FK  Foreign key (GenderId) References tblGender(ID) on delete set NULL;
+
+3. If we want to set some default value then first give  a default value to the parent table and then use below command
+CMD: Alter table tblPerson Add Constraint tblPerson_GenderID_FK  Foreign key (GenderId) References tblGender(ID) on delete set DEFAULT;
+
+
