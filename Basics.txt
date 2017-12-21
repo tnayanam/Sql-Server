@@ -1,0 +1,7 @@
+So We need a SQL Server installed in the system. Once that is installed we need a GUI (SSMS) to interact with it. So we need to install that too. So firstly we need to connect to the SQL Server Engine
+ via SSMS. 
+		Provide Server Type: Database Engine.
+        Server Name: It should be the Name or IP Address of that server.
+		Authentication: Here we can give an authentication to connect. if we give "windows authentication" then we dont need to do anything because we are already logged into the windows. (Best)
+		If we give SQL Server authentication then while installin the Sql Server we must have given one user and password that we need to use.
+		               
