@@ -96,10 +96,16 @@ CMD: Create table Test2
 )
 
 How to get the last identity column
-CMD: Select SCOPE_IDENTITY();  => returns same session value
+CMD: Select SCOPE_IDENTITY();  => returns same session value => Most commonly used.
 CMD: Select @@Identity ; => returns same session across any scope so, if any trigger is there and it is updating that table it wil give the identity of that table.
 
 CMD: select ident_current('test1');   => Important, across any session
+
+Primary key and Unique Key:
+primary Key cannot be NULL but Unique key can be NULL
+
+Add Unique Key Constraint
+CMD: Alter table tblPerson Add constraint UQ_tblPerson_Email Unique(Email);
 
 
 
