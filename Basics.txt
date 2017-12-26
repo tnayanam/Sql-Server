@@ -18,7 +18,7 @@ Rename Database using System Defined SProc
 CMD: sp_renameDB 'Sample3', 'Sample4'
 
 Drop a Database
-CMD: Drop Database Sample4;
+CMD: Drop Database Sample4;    
 
 Create a Table from GUI in SSMS:
 Once you give all the table column details you can click on top of the tab related to that table column and click on Save.
@@ -80,10 +80,26 @@ Add Constraint at the Database level for disallowing certain values
 CMD: Alter table tblPerson Add Constraint CK_tblPerson_Age CHECK (AGE > 0 AND AGE < 150);
 
 For adding Identity value manually and not by DB Automatically
-Set Identity_Insert TableName ON
+CMD: Set Identity_Insert TableName ON
 
 If we want DB to automatically insert the Identity Column Value
-Set Identity_Insert TableName OFF
+CMD: Set Identity_Insert TableName OFF
+
+Reseed the value of identity column to 1
+CMD: DBCC CheckIdent(tblPersonOne, Reseed,0)
+
+Add an Identity column
+CMD: Create table Test2
+(
+	ID int Identity (1,1),
+	Value nvarchar(20)
+)
+
+How to get the last identity column
+CMD: Select SCOPE_IDENTITY();  => returns same session value
+CMD: Select @@Identity ; => returns same session across any scope so, if any trigger is there and it is updating that table it wil give the identity of that table.
+
+CMD: select ident_current('test1');   => Important, across any session
 
 
 
