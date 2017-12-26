@@ -79,5 +79,11 @@ CMD: Alter table tblPerson add Age integer
 Add Constraint at the Database level for disallowing certain values
 CMD: Alter table tblPerson Add Constraint CK_tblPerson_Age CHECK (AGE > 0 AND AGE < 150);
 
+For adding Identity value manually and not by DB Automatically
+Set Identity_Insert TableName ON
+
+If we want DB to automatically insert the Identity Column Value
+Set Identity_Insert TableName OFF
+
 
 
