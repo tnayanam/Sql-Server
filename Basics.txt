@@ -47,7 +47,7 @@ CMD: Alter Table tblPerson add Constraint tblPerson_GenderID_FK
 Foreign Key (GenderId) references tblGender(ID);
 
 Default Value in table column
-CMD: Alter Table tblPerson Add Constraint DF_tblPerson_genderId
+CMD: Alter Table tblPerson Add Constraint DF_tblPerson_genderIdl
 DEFAULT 3 FOR GenderId
 
 Insert When not all columns are included
@@ -71,5 +71,13 @@ CMD: Alter table tblPerson Add Constraint tblPerson_GenderID_FK  Foreign key (Ge
 
 3. If we want to set some default value then first give  a default value to the parent table and then use below command
 CMD: Alter table tblPerson Add Constraint tblPerson_GenderID_FK  Foreign key (GenderId) References tblGender(ID) on delete set DEFAULT;
+
+Add a Column
+CMD: Alter table tblPerson add Age integer
+
+
+Add Constraint at the Database level for disallowing certain values
+CMD: Alter table tblPerson Add Constraint CK_tblPerson_Age CHECK (AGE > 0 AND AGE < 150);
+
 
 
