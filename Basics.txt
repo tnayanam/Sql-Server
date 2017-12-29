@@ -229,6 +229,10 @@ CMD: select e.DeptId, e.name, e.gender, d.DepartmentName from tblEmployee as e r
 NonMatching from both the tables
 CMD: select e.DeptId, e.name, e.gender, d.DepartmentName from tblEmployee as e full join tblDepartment as d on e.DeptId = d.Id where e.DeptId IS NULL or d.Id IS NULL; 
 
+SELF Join is same as above joins
+ select e.EmployeeID, e.Name, r.ManagerID from tblEmp e left join tblEmp r on e.EmployeeID = r.ManagerID; -- SAME TABLE
+ -- Try to imagine if they are two different tables and then apply normal joing procedures.
+
 
 
 
