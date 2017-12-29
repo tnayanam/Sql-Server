@@ -147,5 +147,37 @@ CMD: select  top 2 * from tblPerson;
 TOP first record
 CMD: select top 1 * from tblPerson order by age desc;
 
+Aggregate Function and GROUP  BY - Group by clause is always used in 
+CMD:select  age, count(*) from tblPerson group by age;
+
+Max
+CMD: select MAX(age) from tblPerson;
+
+MIN
+CMD:select MIN(age) from tblPerson;
+
+City wise salary, GROUP BY
+select SUM(salary), city from tblPerson GROUP BY city; 
+
+Alias to aggregate functions
+CMD: select sum(salary) as TotalSalary, city from tblPerson group by city; 
+Output:
+58584	Bombay
+80733	Delhi
+65659	Gujrat
+28365	Mumbai
+
+Multiple group By
+CMD: select sum(salary) as TotalSalary, city,GenderId from tblPerson group by city,GenderId;
+Output:
+25845	Delhi	NULL
+58584	Bombay	1
+28365	Mumbai	1
+54888	Delhi	2
+65659	Gujrat	3
+
+Point: Clearly the city is again broken into gender wise. Nice!!!!
+
+
 
 
