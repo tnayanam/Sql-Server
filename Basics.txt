@@ -227,11 +227,19 @@ NonMatching rows form the right table
 CMD: select e.DeptId, e.name, e.gender, d.DepartmentName from tblEmployee as e right join tblDepartment as d on e.DeptId = d.Id where e.DeptId IS NULL; 
 
 NonMatching from both the tables
+
 CMD: select e.DeptId, e.name, e.gender, d.DepartmentName from tblEmployee as e full join tblDepartment as d on e.DeptId = d.Id where e.DeptId IS NULL or d.Id IS NULL; 
 
 SELF Join is same as above joins
- select e.EmployeeID, e.Name, r.ManagerID from tblEmp e left join tblEmp r on e.EmployeeID = r.ManagerID; -- SAME TABLE
- -- Try to imagine if they are two different tables and then apply normal joing procedures.
+CMD: select e.EmployeeID, e.Name, m.ManagerID, m.Name from tblEmp e left join tblEmp m on e.ManagerID = m.EmployeeID;
+ -- Try to imagine if they are two different tables and then apply normal joining procedures.
+ 
+ISNULL
+CMD: select e.EmployeeID, e.Name, m.ManagerID, ISNULL(m.Name, 'No Manager') from tblEmp e left join tblEmp m on e.ManagerID = m.EmployeeID; -- left outer self join
+Now NUll value will be replaced.
+
+Coalesce:
+CMD:   select e.EmployeeID, e.Name, m.ManagerID, COALESCE(m.Name, 'No Manager') from tblEmp e left join tblEmp m on e.ManagerID = m.EmployeeID; -- left outer self join
 
 
 
