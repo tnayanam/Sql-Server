@@ -178,6 +178,24 @@ Output:
 
 Point: Clearly the city is again broken into gender wise. Nice!!!!
 
+Use Space in Column name when Aliasing
+CMD: select city, sum(salary) as [Total Salary], GenderId, count(ID) from tblPerson group by GenderId, city;
+
+Filter the output using Having and Where in GroupBy also square bracket gives space b/w alases
+
+CMD: select city, sum(salary) as [Total Salary], GenderId, count(ID) from tblPerson group by GenderId, city having GenderId = 1;
+
+CMD: select city, sum(salary) as [Total Salary], GenderId, count(ID) from tblPerson where GenderId = 1 group by GenderId, city ;
+
+
+Difference between having and where clause
+WHERE clause filters the result before and then aggregates them as per the group by clause
+HAVING aggregates all the stuff and then applies filter to it.
+
+Aggregate function can be used in having clause but cannot be used in where clause
+Where SUM(Salary) > 1000;   === Wrong
+HAVING SUM(Salary) >  1000; === Correct
+
 
 
 
