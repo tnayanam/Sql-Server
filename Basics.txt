@@ -220,6 +220,15 @@ Cross Join:
 
 CMD: select name, gender, DepartmentName from tblEmployee as e Cross JOIN tblDepartment as d;
 
+NonMatching rows from left table
+CMD: select name, gender, DepartmentName from tblEmployee as e LEFT OUTER JOIN tblDepartment as d on e.DeptId = d.Id where e.DeptId IS NULL; 
+
+NonMatching rows form the right table
+CMD: select e.DeptId, e.name, e.gender, d.DepartmentName from tblEmployee as e right join tblDepartment as d on e.DeptId = d.Id where e.DeptId IS NULL; 
+
+NonMatching from both the tables
+CMD: select e.DeptId, e.name, e.gender, d.DepartmentName from tblEmployee as e full join tblDepartment as d on e.DeptId = d.Id where e.DeptId IS NULL or d.Id IS NULL; 
+
 
 
 
