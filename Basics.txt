@@ -196,6 +196,30 @@ Aggregate function can be used in having clause but cannot be used in where clau
 Where SUM(Salary) > 1000;   === Wrong
 HAVING SUM(Salary) >  1000; === Correct
 
+Joins
+
+Inner Join:
+
+CMD: select e.name, e.gender, d.DepartmentName from tblEmployee as e INNER JOIN tblDepartment as d on e.DeptId = d.Id; 
+
+CMD: select name, gender, DepartmentName from tblEmployee as e INNER JOIN tblDepartment as d on e.DeptId = d.Id; 
+
+Left Outer Join:
+
+CMD: select name, gender, DepartmentName from tblEmployee as e LEFT OUTER JOIN tblDepartment as d on e.DeptId = d.Id; 
+
+Right Outer Join
+
+CMD: select name, gender, DepartmentName from tblEmployee as e Right OUTER JOIN tblDepartment as d on e.DeptId = d.Id; 
+
+Full Outer Join
+
+CMD: select name, gender, DepartmentName from tblEmployee as e full outer join  tblDepartment as d on e.DeptId = d.Id;
+
+Cross Join:
+
+CMD: select name, gender, DepartmentName from tblEmployee as e Cross JOIN tblDepartment as d;
+
 
 
 
