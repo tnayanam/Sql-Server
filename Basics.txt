@@ -241,6 +241,18 @@ Now NUll value will be replaced.
 Coalesce:
 CMD:   select e.EmployeeID, e.Name, m.ManagerID, COALESCE(m.Name, 'No Manager') from tblEmp e left join tblEmp m on e.ManagerID = m.EmployeeID; -- left outer self join
 
+CASE
+CMD:   select e.EmployeeID, e.Name, m.ManagerID,   CASE WHEN m.Name IS NULL THEN 'No Manager' ELSE '' END from tblEmp e left join tblEmp m on e.ManagerID = m.EmployeeID; -- left outer self join;
+
+Coalesce returns first NOT NULL values
+Tanuj     	Nayanam   
+Rajesh    	Kulkarni  
+Jupiter   	Mars      
+Mercury   	NULL    
+NULL	   April    => here it should return April 
+
+CMD:  Select coalesce(FName, LName) from tblEmp;
+
 
 
 
