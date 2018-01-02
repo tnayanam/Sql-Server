@@ -282,6 +282,23 @@ Difference between Union and Join:
 
 Union combines table from two or more rows Join combines table from two or more column based on some PK FK Relationships
 
+Stored Procedures:
+
+When we need to repeat same SQL command over and over again then better to write a stored procedure.
+
+ CMD:  Create procedure spGetEmployees
+  AS
+  BEGIN
+    select name, gender from tblEmployee
+  END
+  
+  Calling a Sproc
+ CMD: spGetEmployees;
+ CMD: EXECUTE spGetEmployees;
+
+
+
+
 
 
 
