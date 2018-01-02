@@ -356,4 +356,61 @@ CMD:
   Information about a Stored Procedure
 CMD:   sp_help spGetEmpCountByGender;
 
+Sproc using output parameter and Return Values
+
+CMD:
+  Create proc spGetTotalCountOne
+  @TotalCount int Out
+  as Begin
+  Select @TotalCount = COUNT(Id) from tblEmployee;
+  end
+
+
+  Declare @TotalCount int
+  Execute spGetTotalCountOne @TotalCount out
+  print @TotalCount
+
+
+ Create proc spGetTotalCountTwo
+  as 
+  Begin
+  Return(Select COUNT(Id) from tblEmployee)
+  end
+
+    Declare @TotalCount int
+	execute    @TotalCount =  spGetTotalCountTwo
+	print @TotalCount
+	
+	Sproc with one input and one output variable
+	
+	CMD:  	CREATE PROC spGetNameByIdOne
+	@Id int,
+	@Name nvarchar(50) OUT
+	AS
+	Begin
+	select @Name = Name from tblEmployee where Id = @Id
+	End
+
+	Declare @EmpName nvarchar(50)
+	Execute spGetNameByIdOne 2, @EmpName out
+	print @EmpName
+	
+	IMP: Return keyword will not work in below case
+			CREATE PROC spGetNameByIdTwo
+	@Id int
+	AS
+	Begin
+	Return(select Name from tblEmployee where Id = @Id)
+	End
+
+	Declare @EmpName nvarchar(50)
+	Execute @EmpName = spGetNameByIdTwo 2
+	print @EmpName
+	
+	Above will throw error because a Sproc can only return an integer value that too only one value, so one needs to use OUT parameter instead of RETURN 
+
+
+
+
+
 
