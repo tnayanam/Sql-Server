@@ -323,10 +323,37 @@ Begin
 Select Name,Gender,DeptId from tblEmployee Where Gender = @Gender and DeptId = @DeptId order by Name desc
 End
 
+Delete a Stored Procedure
+CMD: Drop proc spGetEmpByGenderAndDepartment
 
+Encrypt the Stored Procedure 
 
+CMD: 
 
+   Alter proc spGetEmpByGenderAndDepartment
+  @Gender nvarchar(50),
+  @DeptId int WITH ENCRYpTION
+  AS
+  Begin
+  Select Name,Gender,DeptId from tblEmployee Where Gender = @Gender and DeptId = @DeptId order by Name desc
+  End
 
+  
+ SProc with output parameters: 
+ 
+ CMD: CREATION:   create proc spGetEmpCountByGender
+  @Gender nvarchar(20),
+  @EmployeeCount int output
+  as
+  BEGIN
+  Select  @EmployeeCount = count(Id) from tblEmployee where gender = @Gender
+  END
 
+ EXECUTION:  Declare  @TotalCount int
+  Execute   spGetEmpCountByGender 'Male', @TotalCount out
+  Print @TotalCount
+
+  Information about a Stored Procedure
+CMD:   sp_help spGetEmpCountByGender;
 
 
