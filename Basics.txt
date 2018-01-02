@@ -286,18 +286,42 @@ Stored Procedures:
 
 When we need to repeat same SQL command over and over again then better to write a stored procedure.
 
- CMD:  Create procedure spGetEmployees
+CMD:  Create procedure spGetEmployees
   AS
   BEGIN
     select name, gender from tblEmployee
   END
   
-  Calling a Sproc
- CMD: spGetEmployees;
- CMD: EXECUTE spGetEmployees;
+Calling a Sproc
+CMD: spGetEmployees;
+CMD: EXECUTE spGetEmployees;
 
 
+Sproc with parameter
+CMD:   create proc spGetEmpByGenderAndDepartment
+@Gender nvarchar(50),
+@DeptId int
+AS
+Begin
+Select Name,Gender,DeptId from tblEmployee Where Gender = @Gender and DeptId = @DeptId
+End
 
+Execution:
+CMD:   spGetEmpByGenderAndDepartment 'male', 1
+
+View the definition of Stored Procedure:
+
+CMD:   sp_helptext spGetEmpByGenderAndDepartment
+
+Alter a Stored Procedure:
+
+CMD:Alter proc spGetEmpByGenderAndDepartment
+@Gender nvarchar(50),
+@DeptId int
+AS
+Begin
+Select Name,Gender,DeptId from tblEmployee Where Gender = @Gender and DeptId = @DeptId order by Name desc
+End
 
 
 
