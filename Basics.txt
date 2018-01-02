@@ -253,6 +253,39 @@ NULL	   April    => here it should return April
 
 CMD:  Select coalesce(FName, LName) from tblEmp;
 
+UNION and UNION ALL
+
+Both works when column name are same and count.
+But Union all will show even the duplicate rows but union will allow dupe rows to come once.
+tblOne
+1	Rajesh    
+2	Nayanam   
+
+tblTwo
+1	Tanuj     
+2	Nayanam   
+
+CMD: Select * from tblOne union all Select * from tblTwo; Output
+  
+1	Rajesh    
+2	Nayanam   
+1	Tanuj     
+2	Nayanam   
+
+CMD:   Select * from tblOne  union   Select * from tblTwo;
+
+1	Rajesh    
+1	Tanuj     
+2	Nayanam   
+
+Difference between Union and Join:
+
+Union combines table from two or more rows Join combines table from two or more column based on some PK FK Relationships
+
+
+
+
+
 
 
 
