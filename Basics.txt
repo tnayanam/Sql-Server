@@ -408,6 +408,11 @@ CMD:
 	print @EmpName
 	
 	Above will throw error because a Sproc can only return an integer value that too only one value, so one needs to use OUT parameter instead of RETURN 
+	
+	Error: Exception:
+	For SQL Server and SSMS to work properly obviously we need the SQL Server to be up and running. More like for our website to run we need IIS Server. So if you get below exception
+	
+	A network related or instance-specific error occurred while establishing a connection to SQL Server.
 
 
 
