@@ -413,6 +413,17 @@ CMD:
 	For SQL Server and SSMS to work properly obviously we need the SQL Server to be up and running. More like for our website to run we need IIS Server. So if you get below exception
 	
 	A network related or instance-specific error occurred while establishing a connection to SQL Server.
+	
+	Benefit of Stored Procedure:
+	
+	- Reuse of the same Execution Plan. Caching. Any change made in ad-hoc query creates a new execution plan however not the case with StoredProcedure.
+	- Reduce Network Traffic. We just need to specify the procedure name and the paramemter from our code. if we do not have the sProc then in that case we need to provide/transfer the entire
+	query over the network.
+	- Code Reusability/Maintainability Multiple application can use it.
+	- Avoids SQL Injection Attacks.
+	
+	
+	
 
 
 
