@@ -371,7 +371,7 @@ CMD:
   print @TotalCount
 
 
- Create proc spGetTotalCountTwo
+ CREATE proc spGetTotalCountTwo
   as 
   Begin
   Return(Select COUNT(Id) from tblEmployee)
@@ -421,6 +421,63 @@ CMD:
 	query over the network.
 	- Code Reusability/Maintainability Multiple application can use it.
 	- Avoids SQL Injection Attacks.
+	
+	Time - gives System datetime
+    CMD: select GETDATE()
+	
+	CMD: create table tblDate (c_time time,	c_date date, c_small smalldatetime, c_datetime datetime, c_datetime2 datetime2, c_datetimeoffset datetimeoffset);
+	
+	CMD: insert into tblDate VALUES (GETDATE(),GETDATE(),GETDATE(),GETDATE(),GETDATE(),GETDATE())
+	
+	OUTPUT: 09:57:06.0833333	2018-01-09	2018-01-09 09:57:00	2018-01-09 09:57:06.083	2018-01-09 09:57:06.0833333	2018-01-09 09:57:06.0833333 +00:00
+	
+	IsDate checks whether the input is in correct date format if not it returns 0 otherwise 1.
+    CMD: Select IsDate('09:57:06'); -- returns 1
+	CMD: Select DAY(GetDate()); -- 9
+	CMD:Select MONTH(GetDate()); -- 1
+	CMD:Select YEAR(GetDate()); -- 2018
+	CMD:select datename(WEEKDAY, GETDATE());  -- Tuesday (string)
+	CMD:select datename(MONTH, GETDATE());   --  January (string)
+	CMD:select datename(YEAR,GETDATE()); --  2018 (string)
+	
+	Example:
+	CREATE table temp (id int, Name nvarchar(50), dte datetime)
+
+	insert into temp values(1, 'SAM', '1980-12-30 00:00:00:000');
+	insert into temp values(2, 'PAM', '1982-09-22 00:00:00:000');
+	insert into temp values(3, 'John', '1985-08-22 00:00:00:000');
+	insert into temp values(4, 'Sara', '1979-11-29 00:00:00:000');
+	
+	
+	SELECT *, datename(WEEKDAY, dte) as day, Month(dte) as MonthNumber , datename(Month, dte) as MonthName, datename(Year, dte) as YEAR from temp;
+	
+	1	SAM	1980-12-30 00:00:00.000	Tuesday	12	December	1980
+	2	PAM	1982-09-22 00:00:00.000	Wednesday	9	September	1982
+	3	John	1985-08-22 00:00:00.000	Thursday	8	August	1985
+	4	Sara	1979-11-29 00:00:00.000	Thursday	11	November	1979
+	
+	select *, datename(WEEKDAY, dte) as day, Month(dte) as [Month Number] , datename(Month, dte) as [Month Name], datename(Year, dte) as YEAR from temp;
+	
+	Difference between datename and datepart is datepart returns integer where as datename returns string. 
+	
+	SELECT *, datename(WEEKDAY, dte) as day, Month(dte) as [Month Number] , datename(Month, dte) as [Month Name], datename(Year, dte) as YEAR from temp;
+	
+	1	SAM	1980-12-30 00:00:00.000	Tuesday	12	December	1980
+	2	PAM	1982-09-22 00:00:00.000	Wednesday	9	September	1982
+	3	John	1985-08-22 00:00:00.000	Thursday	8	August	1985
+	4	Sara	1979-11-29 00:00:00.000	Thursday	11	November	1979
+
+	SELECT *, datepart(WEEKDAY, dte) as day, Month(dte) as [Month Number] , datepart(Month, dte) as [Month Name], datepart(Year, dte) as YEAR from temp;
+
+	1	SAM	1980-12-30 00:00:00.000	3	12	12	1980
+	2	PAM	1982-09-22 00:00:00.000	4	9	9	1982
+	3	John	1985-08-22 00:00:00.000	5	8	8	1985
+	4	Sara	1979-11-29 00:00:00.000	5	11	11	1979
+	
+	Adds to the date:
+	CMD: select DATEADD(DAY, 12, getdate()); --args(which part you want to add, ow much you want tto add, to whic date you want to add)
+	
+	select datediff(MONTH, getdate(),'2018-5-30'); --args(which part you want to fetch the difference, dtate1, date2)
 	
 	
 	
