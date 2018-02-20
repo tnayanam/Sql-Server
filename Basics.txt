@@ -491,6 +491,40 @@ CMD:   Declare @Counter INT
   Print  floor(rand()*1000)
  Set @Counter = @Counter + 1
   End
+-----------Functions-------------  
+  There are 3 types of User Defined Functions
+a. Scalar
+b. Inline table-valued functions
+c. Multi-Statement table-valued functions
+
+A. Scalar Functions
+
+	CMD: Create Function CalculateAgeNew1 (@Dob Int)
+	  Returns INT
+	  As
+	  Begin
+	  Declare @test int
+	  Set @test = 3
+	  Set @Dob = 6 * @test
+	  Return @Dob
+	  End
+		// this will give error
+			Select CalculateAgeNew1(10)
+		  // this will work as dbo is added
+	CMD: Invoke ----	  Select dbo.CalculateAgeNew1(10) As ClmnName
+
+SELECT Clause Function Usage: CALL Function Inline
+	CMD: Select Name, DateOfBirth, Salary, dbo.CalculateAgeNew1(Salary) As ClmnName from tblEmployee;
+WHERE Clause Function Usage: CALL Function Inline
+	CMD: Select Name, DateOfBirth, Salary  from tblEmployee Where dbo.CalculateAgeNew1(Salary) > 1000;
+View the text / definition of a function:
+    CMD:  sp_helptext CalculateAgeNew1
+	
+
+
+
+
+  
 
 	
 	
