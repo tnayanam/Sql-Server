@@ -479,6 +479,20 @@ CMD:
 	
 	select datediff(MONTH, getdate(),'2018-5-30'); --args(which part you want to fetch the difference, dtate1, date2)
 	
+-- Mathematical Functions:
+Rand() It returns random number between 0 to 1. Now if we want some number b/w a specified limit then multiply the output. see below
+CMd:   select floor(rand()*100)
+
+- above will return just one value, if we want multiple values then we can try below FUNCTION
+CMD:   Declare @Counter INT
+  Set @Counter = 1
+  While(@Counter <=10)
+  Begin
+  Print  floor(rand()*1000)
+ Set @Counter = @Counter + 1
+  End
+
+	
 	
 	
 
