@@ -520,6 +520,20 @@ WHERE Clause Function Usage: CALL Function Inline
 View the text / definition of a function:
     CMD:  sp_helptext CalculateAgeNew1
 	
+	We cannot use Stored Proc in select and where clause but we can use a function
+	
+	Inline table valued function:
+	
+	  CMD: Create Function FilterGender(@Gender nvarchar(10))
+			Returns table
+			as
+			return (select * from tblDepartment where abc = @Gender)
+
+  CALLING:
+  CMD:select * from FilterGender('ma')
+	
+	
+	
 
 
 
