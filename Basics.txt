@@ -530,7 +530,54 @@ View the text / definition of a function:
 			return (select * from tblDepartment where abc = @Gender)
 
   CALLING:
-  CMD:select * from FilterGender('ma')
+		CMD:select * from FilterGender('ma')
+  CALLING with Where
+		CMD:select * from FilterGender('ma') where name = 'test'
+		
+	Deterministic and Non Deterministic Functions
+	A deterministic function always returns same result anytime they are called with a specific set of input values and given the same state of database.
+	example - Square, Power, Sum, Average
+	A non deterministic function always returns different set of results for same specific set of inputs
+	example - GetDate
+	
+	Basic Function
+	CMD:
+	Create Function fnFilterGender(@Id int)
+		 Returns nvarchar(50)
+			as
+			begin
+			return (select name from tblEmployee where Id = @Id)
+			end
+	Execution:
+	CMD: select dbo.fnFilterGender(1)
+	
+	View Function Definition:
+	CMD: sp_helptext fnFilterGender;
+	
+	Encryption:
+	CMD:
+	alter Function fnFilterGender(@Id int)
+		 Returns nvarchar(50)
+		WITH ENCRYPTION
+			as
+			begin
+			return (select name from tblEmployee where Id = @Id)
+			end
+			
+Schema Binding:
+Suppose we have a function that is getting referenced in a function definition and now someone deletes that function so in this case if someone calls that function it willl throw the exception
+so we need to somehow do not allow the table to be deleted as long as it is being referenced by any function. 
+
+
+			alter Function fnFilterGender(@Id int)
+		 Returns nvarchar(50)
+		 with SCHEMABINDING
+			as
+			begin
+			return (select name from dbo.tblEmployee where Id = @Id)
+			end
+
+			Now tblEmployee cannot be deleted. first this fucntion needs to be deleted then only tblEmployee can be deleted.
 	
 	
 	
