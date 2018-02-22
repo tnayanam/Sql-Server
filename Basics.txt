@@ -578,9 +578,25 @@ so we need to somehow do not allow the table to be deleted as long as it is bein
 			end
 
 			Now tblEmployee cannot be deleted. first this fucntion needs to be deleted then only tblEmployee can be deleted.
-	
-	
-	
+			
+Temporary Tables:
+Temporary tables are very much similar to the permanent tables. Permamnent tables get created in the database you specify, temporary tables get 
+created in TempDb and are automatically deleted, when they are no longer used
+there are two types of it.
+1. Local Temporary Tables
+2. Global Temporary Tables
+
+To create temp table
+CMD: create table #emps(name int)
+
+a local temp table is only accessible in its own tab. if you open a new tab and run query that table will not be available.
+if you close the current tab where the temp table was created it will be dropped automatically.
+
+CMD: Select name from tempdb..sysobjects where name Like '#emps'.
+
+ here we need to use LIKE because temptable when gets created SQL server adds some random character to the table name.
+
+
 
 
 
