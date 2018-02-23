@@ -606,12 +606,11 @@ CMD: Select name from tempdb..sysobjects where name Like '#emps'.
  
  CMD: create INDEX IX_PERSON on tblPerson (salary asc)
  
-To know all the index in a table
-sp_helpindex tblPerson
+	To know all the index in a table
+	CMD:sp_helpindex tblPerson
 
-
-Drop Indexes
-CMD: drop index tblPerson.IX_PERSON 
+	Drop Indexes
+	CMD: drop index tblPerson.IX_PERSON 
 
 
 
