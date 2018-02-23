@@ -595,6 +595,24 @@ if you close the current tab where the temp table was created it will be dropped
 CMD: Select name from tempdb..sysobjects where name Like '#emps'.
 
  here we need to use LIKE because temptable when gets created SQL server adds some random character to the table name.
+ 
+ Global Temporary Tables
+ CMD: create table ##emps(name int)
+ 
+ they are accesible from multuiple tabs/connection. they only get destroyed when the last connection is closed. 
+ 
+ Indexes:
+ They are used to find data from tables quickly. they are created for tables and views.
+ 
+ CMD: create INDEX IX_PERSON on tblPerson (salary asc)
+ 
+To know all the index in a table
+sp_helpindex tblPerson
+
+
+Drop Indexes
+CMD: drop index tblPerson.IX_PERSON 
+
 
 
 
