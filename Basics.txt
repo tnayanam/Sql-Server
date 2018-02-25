@@ -639,6 +639,22 @@ Covering Query: Suppsoe we created a non clustered index on columns firstname th
 first name in that case we alreadyh have that in our CLustered Look up table. so qurery dont need to go to the main table. so more fast
 A clustered index is alwaYS A covering query: Reason being it is done on the same table. clustered index does not have a separate table.
 
+View is more like a virtual table
+CMD: Create View vwMyView as Select id,name,deptname from tblEmp join tblDept ON tblEmp.id = tblDept.Id;
+
+sp_helptext vwMyView;
+
+IMP: views are just stored SQL queries. 
+updating views will update the base tables 
+iNDEXED Views:
+Indexed-View : When we create a Clustered Index on a view then views gets material;ized thus can keep data too.
+
+Limitations of a View: You cannot pass parameter to a view. If one needs to pass parameter then either call the view and use wqhere cvlause if not then use Fucntions
+
+Views cannot be created for a temporary tables.
+
+
+
 
 
 
