@@ -613,6 +613,26 @@ CMD: Select name from tempdb..sysobjects where name Like '#emps'.
 	CMD: drop index tblPerson.IX_PERSON 
 
 
+Indees are of many types
+	- Non Clustered and Clustered
+	
+	PK creatin in a table automatically creates a index (clustered) SQL Servcer uses this index to enfoprce unique constrsaint on primary key
+	no matter hoe you store the data the dtata always gets sorted as per the clustered index in this case primary key
+	thast is way if you input id = 3 and then input id = 1. when you do select * ======== id = 1 will come first
+	one table can haver onbly 1 clustered index,but that clustered index can be includinbg multiple columns
+	those are called "composite clustered index"
+	CMD:Create clustered index IX_TBlEmp on tblEmp(Gender Desc, Salary ASC)
+       now if gender is same then salary will be in ascending order
+	   
+	in no clustered index a separate table is created and then the as per the row address different rows in original table is accessed like index in a book
+
+CMD: Create NonClustered Index IX_TblEmployee ON tblEmployee(Name)
+Non clustered indexes are stored separately so extra disk space is required.
+By default PK creaetes an unique clustered Index on the table.
+PK uses unique index behind the scene to enforce uniqueness.
+
+
+
 
 
 
