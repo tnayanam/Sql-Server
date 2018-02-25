@@ -627,7 +627,7 @@ CMD: Select name from tempdb..sysobjects where name Like '#emps'.
 
 CMD: Create NonClustered Index IX_TblEmployee ON tblEmployee(Name)
 Non clustered indexes are stored separately so extra disk space is required.
-
+By default PK creaetes an unique clustered Index on the table.
 
 
 
