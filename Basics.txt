@@ -630,6 +630,14 @@ CMD: Create NonClustered Index IX_TblEmployee ON tblEmployee(Name)
 Non clustered indexes are stored separately so extra disk space is required.
 By default PK creaetes an unique clustered Index on the table.
 PK uses unique index behind the scene to enforce uniqueness.
+Advantage of Index:
+Always remember: PK are nothning but Clustered index, that is why select * always gives the data in sorted format.
+fast updation deletion seletion
+Disadvantage of Index (non clustered):
+Additional Disk Storage
+Covering Query: Suppsoe we created a non clustered index on columns firstname then if out query just want to fetch the
+first name in that case we alreadyh have that in our CLustered Look up table. so qurery dont need to go to the main table. so more fast
+A clustered index is alwaYS A covering query: Reason being it is done on the same table. clustered index does not have a separate table.
 
 
 
