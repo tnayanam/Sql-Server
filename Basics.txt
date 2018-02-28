@@ -653,6 +653,75 @@ Limitations of a View: You cannot pass parameter to a view. If one needs to pass
 
 Views cannot be created for a temporary tables.
 
+Triggers are of 3 types:
+1. DML
+2. DDL
+3. LogOn
+
+DML trigger asre affcted by insert, update and delete.
+
+DML Trigger are again of two types:
+a. After triggers
+b. Instead of triggers
+
+a. After Insert triggers: it is triggered when insert statement is run. 
+
+Create trigger tr_Emps_Audit
+On Emps
+ For Insert
+ As
+ Begin
+ --Declare @Id int
+ Select *  from inserted
+ End
+ 
+ Now "inserted" depicts the row tha tis getting inserted. So basially this above command will output the inserted row.
+ 
+  Insert into Emps values (3,'Tanuj',4500,'M', 2);
+  after running this above command we will again see the same as output. as this will asct as "Inserted".
+  
+  
+  Example:
+  CMD: create trigger tr_Emps_Audit
+On Emps
+ For Insert
+ As
+ Begin
+ Declare @Id int
+Select  @Id = Id  from inserted
+insert into Audit Values(1, 'Id inserted is ' + cast(@Id as nvarchar(5)));
+
+ End
+ 
+ DELETED:
+ CMD:  create trigger tr_Emps_Audit_del
+On Emps
+ For Delete
+ As
+ Begin
+ Declare @Id int
+Select  @Id = Id  from deleted
+insert into Audit Values(1, 'Id deleted is ' + cast(@Id as nvarchar(5)));
+ End
+ 
+ Update trigggers
+ 
+ Create trigger tr_tblEMps_Update
+on Emps
+ For Update
+ As
+ Begin
+ select * from deleted // it holds the OLD value that is getting updated
+ Select * from inserted  // It holds the NEW valuie that is getting updated to.
+ End
+ 
+ update  Emps set id = 4 where id = 5;
+ 
+ deleted will contain data related to id = 5
+ updated will contain data related to id = 4
+
+
+
 
 
 
