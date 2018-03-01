@@ -746,6 +746,52 @@ on tblEmployee.DepartmentId = tblDepartment.DeptIdgroup by DeptName, DepartmentI
 as EmployeeCount
 where TotalEmployees > = 2
 
+Stored Procedure and Transaction
+
+create table tblMailAddress(Id int, state nvarchar(10));
+
+create table tblPostalAddress(Id int, state nvarchar(10));
+
+Insert into tblMailAddress values(1, 'Dubaai');
+Insert into tblPostalAddress values(1, 'Indiaa');
+
+select * from tblMailAddress;
+select * from tblPostalAddress;
+
+
+Create Procedure spUpdateAddress
+	As
+Begin
+		Begin Try
+			Begin Transaction
+				Update tblMailAddress set state = 'Dubai' where state = 'Dubaai'
+				Update tblPostalAddress set state = 'India' where state = 'Indiaa'
+				Commit Transaction
+		End Try
+		Begin Catch
+			Rollback Transaction 
+		End Catch
+End
+
+After running sproc the data will be Dubai and India
+
+Alter Procedure spUpdateAddress
+	As
+Begin
+		Begin Try
+			Begin Transaction
+				Update tblMailAddress set state = 'North' where state = 'Dubai'
+				Update tblPostalAddress set state = 'IndiaMoreThan10character' where state = 'India'
+				Commit Transaction
+		End Try
+		Begin Catch
+			Rollback Transaction
+			Print 'Exception' 
+		End Catch
+End
+
+Now the data will not be updated in both the tables because of more tha 10 character and both the updates are under one transcation so both will get rolledback
+
 
 
 
