@@ -719,8 +719,32 @@ on Emps
  
  deleted will contain data related to id = 5
  updated will contain data related to id = 4
+ 
+ Normalization:
+ is the process of minimizing data redundaNCY which in turns provides data consistency
+ Problems with Data Redundancy:
+ a. Disk Space Wastage
+ b. Data Inconsistency
+ c. DML queries can be slow
+ 
+1 NF:
+ Data should be automic in each column we should not have comma separated values.
+ Identify each record using uniquely via PK
+2 NF:Move redundant data to separa to table and join with FK Relationship 
+3 NF: All the columns must be dependent fully dependent on PK. suppose we have a salary column and annual salary column 
+then annual salary isa dependent on salary which is not a PK. So we need to remove annual salary columns.   
 
-
+Derived Tables:
+Select DeptName, TotalEmployees
+from
+{
+Select DeptName, DepartmentId, COUNT(*) as TotalEmployees
+from tblEmployee
+join tblDepartment
+on tblEmployee.DepartmentId = tblDepartment.DeptIdgroup by DeptName, DepartmentId
+}
+as EmployeeCount
+where TotalEmployees > = 2
 
 
 
