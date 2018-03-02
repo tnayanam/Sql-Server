@@ -792,6 +792,60 @@ End
 
 Now the data will not be updated in both the tables because of more tha 10 character and both the updates are under one transcation so both will get rolledback
 
+Once a transaction is going on like below
+	Begin Transaction
+				Update tblMailAddress set state = 'North' where state = 'Dubai'
+				and if you try to go to another tab and access that data you cannot. this is because that record is locked and unless the transaction is commited
+				
+				that row is not accesible.
+	Also ACID
+	A-> Atomicity: 
+	C->Consistenct
+	I-> Isolated
+	D->Durable
+	
+	SubQuery Using JOIN and NOT IN
+	
+Create table tblProducts(
+Id int identity Primary Key,
+Name nvarchar(50),
+Description nvarchar(250)
+)
+
+Create table tblProductSales(
+Id int Primary Key identity,
+ProductId int foreign key references tblProducts(Id),
+UnitPrice int,
+QuantitySold int
+)
+
+
+INsert into tblProducts values('Tv','goood idiot box');
+INsert into tblProducts values('Lapgtop','goood laptop box');
+INsert into tblProducts values('Desktop','goood DEsktop box');
+insert into tblProductSales values(3,450, 5);
+insert into tblProductSales values(2,250, 7);
+insert into tblProductSales values(3,450, 4);
+insert into tblProductSales values(3,450, 9);
+
+select * from tblProducts;
+select * from tblProductSales;
+select Name from tblProducts where Id not in (Select ProductId from tblProductSales);
+
+select tblProducts.Name, tblProductSales.ProductId  from tblProducts left outer join tblProductSales on tblProducts.id = tblProductSales.ProductId
+
+where tblProductSales.ProductId is null
+
+== showing sum f producst sold
+
+select tblProducts.Name , sum(tblProductSales.QuantitySold) from tblProducts left join tblProductSales on tblProducts.Id = tblProductSales.ProductId
+
+group by tblProducts.Name;
+
+select tblProducts.Name , (Select SUM(tblProductSales.QuantitySold) from tblProductSales where tblProducts.Id = tblProductSales.ProductId) as qtysold
+from tblProducts;
+
+
 
 
 
