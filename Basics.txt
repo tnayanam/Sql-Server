@@ -845,6 +845,19 @@ group by tblProducts.Name;
 select tblProducts.Name , (Select SUM(tblProductSales.QuantitySold) from tblProductSales where tblProducts.Id = tblProductSales.ProductId) as qtysold
 from tblProducts;
 
+CMD:
+
+Get all tables in a database
+CMD: select * from sysobjects where xtype = 'U';
+CMD: select * from sys.tables
+Get all functions
+CMD: select * from sysobjects where xtype = 'FN';
+Get all Sproc
+CMD: select * from sysobjects where xtype = 'P';
+select * from sys.procedures;
+Get all views
+CMD: select * from sysobjects where xtype = 'v';
+
 
 
 
