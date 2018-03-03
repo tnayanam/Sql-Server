@@ -873,6 +873,33 @@ BEgin
  Print 'Column EmailAddress already exists'
 End
 
+ALter Table Coulmn
+CMD: Alter table tblEmployee
+Alter column Salary int
+
+Optional Stored Procedures
+CMD:
+
+Create  table tblEmp
+(
+	Id int Primary Key identity,
+	Name nvarchar(100),
+	Salary int
+);
+
+Insert into tblEmp values('Tanuj', 40000);
+
+execute spInserttblEmp @salary = 40000        
+select * from tblEmp;        
+
+Create Procedure spInserttblEmp
+@Name nvarchar(100) = NULL,
+@Salary int = NULL 
+As
+Begin
+	Select * from  tblEmp Where (Name = @Name or @Name is NULL) AND  (Salary = @Salary or @Salary IS NULL)
+End                                   
+
 
 
 
