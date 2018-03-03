@@ -858,6 +858,20 @@ select * from sys.procedures;
 Get all views
 CMD: select * from sysobjects where xtype = 'v';
 
+Check if a table exists
+If not exists  (Select * from  information_schema.tables where table_name = 'tblEmployee')
+
+ReRunnable Scripts
+Use [Sample] // this makes sure we are targetting a particular database.
+if not exists(Select * from INFORMATION_SCHEMA.COLUMNS where COLUMN_NAME='EmailAddress' and TABLE_NAME = 'tblEmployee' and TABLE_SCHEMA='dbo') 
+Begin
+ ALTER TABLE tblEmployee
+ ADD EmailAddress nvarchar(50)
+End
+Else
+BEgin
+ Print 'Column EmailAddress already exists'
+End
 
 
 
