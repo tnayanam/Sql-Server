@@ -898,8 +898,58 @@ Create Procedure spInserttblEmp
 As
 Begin
 	Select * from  tblEmp Where (Name = @Name or @Name is NULL) AND  (Salary = @Salary or @Salary IS NULL)
-End                                   
+End    
 
+
+Concurrency Problems:
+- Dirty Reads
+- Lost Updates
+- NonRepeatable Reads
+- Phantom Reads
+
+SQL Server Transaction Isoliation Levels
+- Read Uncommited
+- Read Commited : Default Isolation Level of SQL Server
+- Repeatable Read
+- Snapshot
+- Serializable                                 
+
+Basically if you run a statement  like this
+begin transaction
+update tblEmp set salary = 5600 where salary = 4500
+
+and then if you select * from tblEMp from same tab you will see result of 5600 but when you go to other tab in SDQL Server
+and try to load the value it wont load as the transaction is not yet commited so either the transaction is commited then
+value will permamnently changed or if it ias rollback then original salary 450 will be availbale in any case salry is not
+completely decided yet so none of the other conncetion can access tahtdata. Basically it is blocked until the initial transaftion
+is completed by ENd Transaction command.
+
+SQL Server default Isolation Level Read Commited. But here we have certain data that is not commited yet so SQL Server cannot Read it yet.
+Only when a data is commited it ias allowed to be read.
+
+Now in order to read dirty data or uncommited data suppos you ran a transaction like below
+
+Begin Tran
+Update tblInventory set ItemsInStock = 9 where Id=1
+-- Billing the customer
+Waitfor Delay '00:00:15'
+-- Insufficient Funds. Rollback transaction
+* Rollback Transaction
+and just quickly if you run below statemnet'
+
+
+Select * from tblInventory where Id=1 => this wuill not work so now set the transaction level to read uncommited like below
+
+Set Transaction Isolation Level Read Uncommitted
+Select * from tblInventory where Id=1
+
+OR
+
+Select * from tblInventory (NOLOCK) where Id=1
+
+Now you can read the data as 9 where as it is being rolled back at *.
+SO avbove is DIrty Read this happend when Isolation level is Read Uncommited
+ 
 
 
 
