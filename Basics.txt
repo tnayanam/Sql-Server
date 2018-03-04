@@ -1044,7 +1044,10 @@ rollback transaction
 Tran 2 -insert into tblInventory values(300);
 
 Now tran 1 will give same output in both (^^) cases 
+Note: There is subtle difference between Repeatbal;e read and Serializable
+Repeatable read prevents only non-repeatable read. Repeatable read isolation level ensures that the data that one transaction has read, will be prevented from being updated or deleted by any other transaction, but it doe not prevent new rows from being inserted by other transactions resulting in phantom read concurrency problem.
 
+Serializable prevents both non-repeatable read and phantom read problems. Serializable isolation level ensures that the data that one transaction has read, will be prevented from being updated or deleted by any other transaction. It also prevents new rows from being inserted by other transactions, so this isolation level prevents both non-repeatable read and phantom read problems.
 
 
 
