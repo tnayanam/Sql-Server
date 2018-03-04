@@ -949,6 +949,72 @@ Select * from tblInventory (NOLOCK) where Id=1
 
 Now you can read the data as 9 where as it is being rolled back at *.
 SO avbove is DIrty Read this happend when Isolation level is Read Uncommited
+
+IMPORTANT: It is very imortant to note that if you just have a select statement in transaction 1 then in that case if you go to second tab and then
+uou can easily run a select statement. So SQL Server is smart enoguh to know that there is no uncommited data in first transaction. It is just a read
+/select statement so there is no point blocking second transaction. However if there is an update statement in transaction 1 then in that case we have 
+a uncommited data so transaction 2 will be blocked.
+
+
+SQL Server Lost Update. It happens even in SQL Default Read Commited case also. Becasue as we discussed above that read is always allowed as long any uncommited 
+cahnges are not detected. see below example
+select * from tblInventory;
+output = 10
+
+                                                             steps
+Begin Tran
+Declare @ItemInStock int
+Select @ItemInStock = numInStock from tblInventory            first
+-- till here no uncommited cvhange are detected so **
+WaitFor Delay '00:00:10'
+
+Set @ItemInStock = @ItemInStock - 1;
+Update tblInventory set numInStock = @ItemInStock where id = 1;        forth
+commit transaction
+
+
+Begin Tran
+Declare @ItemInStock int
+** select staement is working fine as no uncommited changes yet.
+Select @ItemInStock = numInStock from tblInventory                 second
+
+WaitFor Delay '00:00:01'
+
+Set @ItemInStock = @ItemInStock - 2;
+Update tblInventory set numInStock = @ItemInStock where id = 1;   third
+commit transaction
+
+
+Expected output = 7
+Output = 9
+
+Repeatable Read Problems
+So if we are selecting one data in tran saction one and then in other transaction two we are updating that data. then in transaction one if we read the smae data
+it will not match becasue it has been updated. this is called repetable read problem. TO solve it we need to add Repetable read isolation level. So transacton 2 will
+wait untill transaction 1 is compelted successfully.
+
+
+-- Transaction 1
+Set transaction isolation level repeatable read
+Begin Transaction
+Select ItemsInStock from tblInventory where Id = 1
+
+-- Do Some work
+waitfor delay '00:00:10'
+
+Select ItemsInStock from tblInventory where Id = 1
+Commit Transaction
+
+-- Transaction 2
+Update tblInventory set ItemsInStock = 5 where Id = 1
+
+
+
+
+
+
+
+
  
 
 
