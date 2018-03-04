@@ -1111,6 +1111,39 @@ Update TableA Set Name = 'Mary Transaction 2' where Id = 1
 -- successfully while the other transaction is made the deadlock victim
 Commit Transaction
 
+n this video we will discuss 
+1. How SQL Server detects deadlocks
+2. What happens when a deadlock is detected
+3. What is DEADLOCK_PRIORITY
+4. What is the criteria that SQL Server uses to choose a deadlock victim when there is a deadlock
+
+This is continuation to Part 78, please watch Part 78 before proceeding.
+
+How SQL Server detects deadlocks
+Lock monitor thread in SQL Server, runs every 5 seconds by default to detect if there are any deadlocks. If the lock monitor thread finds deadlocks, the deadlock detection interval will drop from 5 seconds to as low as 100 milliseconds depending on the frequency of deadlocks. If the lock monitor thread stops finding deadlocks, the Database Engine increases the intervals between searches to 5 seconds.
+
+What happens when a deadlock is detected
+When a deadlock is detected, the Database Engine ends the deadlock by choosing one of the threads as the deadlock victim. The deadlock victim's transaction is then rolled back and returns a 1205 error to the application. Rolling back the transaction of the deadlock victim releases all locks held by that transaction. This allows the other transactions to become unblocked and move forward.
+
+What is DEADLOCK_PRIORITY
+By default, SQL Server chooses a transaction as the deadlock victim that is least expensive to roll back. However, a user can specify the priority of sessions in a deadlock situation using the SET DEADLOCK_PRIORITY statement. The session with the lowest deadlock priority is chosen as the deadlock victim.
+
+Example : SET DEADLOCK_PRIORITY NORMAL
+
+DEADLOCK_PRIORITY 
+1. The default is Normal
+2. Can be set to LOW, NORMAL, or HIGH
+3. Can also be set to a integer value in the range of -10 to 10.
+ LOW : -5
+ NORMAL : 0
+ HIGH : 5
+
+What is the deadlock victim selection criteria
+1. If the DEADLOCK_PRIORITY is different, the session with the lowest priority is selected as the victim
+2. If both the sessions have the same priority, the transaction that is least expensive to rollback is selected as the victim
+3. If both the sessions have the same deadlock priority and the same cost, a victim is chosen randomly
+
+
 
 
 
