@@ -1008,6 +1008,45 @@ Commit Transaction
 -- Transaction 2
 Update tblInventory set ItemsInStock = 5 where Id = 1
 
+Phantom Problem : here we talk about some range valeus
+
+
+-- select * from tblInventory;
+set transaction isolation level repeatable read
+begin tran
+select * from tblInventory where numInStock < 500;
+
+waitfor delay '00:00:10'
+
+select * from tblInventory where numInStock < 500;
+commit transaction
+
+rollback transaction
+
+CMD: transaction - 2 insert into tblInventory values(340);
+
+in this case transaction 1 gives different output.
+
+Now to avoid it we do Serialization Isolation Levels
+
+set transaction isolation level serializable
+begin tran
+select * from tblInventory where numInStock < 500; ^^
+
+waitfor delay '00:00:10'
+
+select * from tblInventory where numInStock < 500;  ^^
+commit transaction
+
+rollback transaction
+
+
+Tran 2 -insert into tblInventory values(300);
+
+Now tran 1 will give same output in both (^^) cases 
+
+
+
 
 
 
