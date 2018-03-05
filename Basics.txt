@@ -1056,6 +1056,12 @@ Snapshot isolation doesn't acquire locks, it maintains versioning in Tempdb. Sin
 
 
 
+ISOLATION LEVEL:     Dirty Reads  Lost Update    NOn Repeatable Reads    Phantom Reads
+Read Uncommitted         YES         YES           YES                    YES
+Read Committed           NO           YES          YES                     YES
+Repeatable Read          NO            NO           NO                     YES
+Snapshot                 NO           NO            NO`                      NO
+Serializable             NO           NO             NO                      NO
 In this video we will discuss a scenario when a deadlock can occur in SQL Server.
 
 When can a deadlock occur
@@ -1194,6 +1200,35 @@ Update TableA Set Name = Name + ' Transaction 2' where Id IN (1, 2, 3, 4, 5)
 -- After a few seconds notice that this transaction will be chosen as the deadlock
 -- victim as it is less expensive to rollback this transaction than Transaction 1
 Commit Transaction
+
+DEADLOCK VIctim based on priority
+
+In the following example we have set DEADLOCK_PRIORITY of Transaction 2 to HIGH. Transaction 1 will be chosen as the deadlock victim, because it's DEADLOCK_PRIORITY (Normal) is lower than the DEADLOCK_PRIORITY of Transaction 2.
+
+-- Transaction 1
+Begin Tran
+Update TableA Set Name = Name + ' Transaction 1' where Id IN (1, 2, 3, 4, 5)
+
+-- From Transaction 2 window execute the first update statement
+
+Update TableB Set Name = Name + ' Transaction 1' where Id = 1
+
+-- From Transaction 2 window execute the second update statement
+Commit Transaction
+
+
+-- Transaction 2
+SET DEADLOCK_PRIORITY HIGH
+GO
+Begin Tran
+Update TableB Set Name = Name + ' Transaction 2' where Id = 1
+
+-- From Transaction 1 window execute the second update statement
+
+Update TableA Set Name = Name + ' Transaction 2' where Id IN (1, 2, 3, 4, 5)
+
+-- After a few seconds notice that Transaction 1 will be chosen as the deadlock victim as it's 
+-- DEADLOCK_PRIORITY (Normal) is lower than the DEADLOCK_PRIORITY this transaction (HIGH)
 
 
 
