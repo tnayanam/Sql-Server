@@ -1265,6 +1265,59 @@ Begin
  Commit Transaction
 End
 
+Now we will learn DDL Triggers:
+DDL Triggers fire in respopnse to DDL Operations such as Alter, Create ,Drop
+When to Use DDL Triggers:
+- If you want to execute some code in response tp a specific DDL Event
+- To prevent certain changes to your database schema
+- Audit the changes that the users are making to the database structure
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on Database //scope of this trigger will be just for the current database
+For CREATE_TABLE
+AS
+BEGIN
+Print 'New Table Created'
+END
+
+CMD: Create Table temp(Id int);
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on Database
+For CREATE_TABLE, DROP_TABLE, ALTER_TABLE
+AS
+BEGIN
+Print 'Table Changed'
+END
+
+CMD: Drop Table Temp;
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on ALL SERVER //scope of this trigger will be  for all the server
+For CREATE_TABLE
+AS
+BEGIN
+Print 'New Table Created'
+END
+
+CMD: Create Table temp(Id int);
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on Database
+For CREATE_TABLE, DROP_TABLE, ALTER_TABLE
+AS
+BEGIN
+Print 'Table Changed'
+END
+
+CMD: Drop Table Temp;
+
+// above trigger will work across all the databases.
+
+DIsbale a trigger:
+
+CMD: Disable TRIGGER tr_DDL_OnCreate ON ALL SERVER    
+
 
 
 
