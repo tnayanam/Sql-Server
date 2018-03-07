@@ -12,33 +12,43 @@ namespace DeadLock
 
         }
 
-        protected void Button1_Click(object sender, EventArgs e)
+        [System.Web.Services.WebMethod]
+        public static Result CallStoredProcedure(int attemptsLeft)
         {
-            try
+            Result _result = new Result();
+            if (attemptsLeft > 0)
             {
-                string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
-                using (SqlConnection con = new SqlConnection(cs))
+
+
+                try
                 {
-                    SqlCommand cmd = new SqlCommand("spTransaction1", con);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    Label1.Text = "Transaction successful";
-                    Label1.ForeColor = System.Drawing.Color.Green;
+                    string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+                    using (SqlConnection con = new SqlConnection(cs))
+                    {
+                        SqlCommand cmd = new SqlCommand("spTransaction1", con);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        _result.Message = "Transaction successful";
+                        _result.Success = true;
+                        _result.AttemptsLeft = 0;
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Number == 1205)
+                    {
+                        _result.AttemptsLeft = attemptsLeft - 1;
+                        _result.Message = "Deadlock Occured" + _result.AttemptsLeft.ToString();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                    _result.Success = false;
                 }
             }
-            catch (SqlException ex)
-            {
-                if (ex.Number == 1205)
-                {
-                    Label1.Text = "Deadlock. Please retry";
-                }
-                else
-                {
-                    Label1.Text = ex.Message;
-                }
-                Label1.ForeColor = System.Drawing.Color.Red;
-            }
+            return _result;
         }
     }
 }
