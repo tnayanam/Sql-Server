@@ -630,6 +630,726 @@ Non clustered indexes are stored separately so extra disk space is required.
 By default PK creaetes an unique clustered Index on the table.
 
 
+Indees are of many types
+	- Non Clustered and Clustered
+	
+	PK creatin in a table automatically creates a index (clustered) SQL Servcer uses this index to enfoprce unique constrsaint on primary key
+	no matter hoe you store the data the dtata always gets sorted as per the clustered index in this case primary key
+	thast is way if you input id = 3 and then input id = 1. when you do select * ======== id = 1 will come first
+	one table can haver onbly 1 clustered index,but that clustered index can be includinbg multiple columns
+	those are called "composite clustered index"
+	CMD:Create clustered index IX_TBlEmp on tblEmp(Gender Desc, Salary ASC)
+       now if gender is same then salary will be in ascending order
+	   
+	in no clustered index a separate table is created and then the as per the row address different rows in original table is accessed like index in a book
+
+CMD: Create NonClustered Index IX_TblEmployee ON tblEmployee(Name)
+Non clustered indexes are stored separately so extra disk space is required.
+By default PK creaetes an unique clustered Index on the table.
+PK uses unique index behind the scene to enforce uniqueness.
+Advantage of Index:
+Always remember: PK are nothning but Clustered index, that is why select * always gives the data in sorted format.
+fast updation deletion seletion
+Disadvantage of Index (non clustered):
+Additional Disk Storage
+Covering Query: Suppsoe we created a non clustered index on columns firstname then if out query just want to fetch the
+first name in that case we alreadyh have that in our CLustered Look up table. so qurery dont need to go to the main table. so more fast
+A clustered index is alwaYS A covering query: Reason being it is done on the same table. clustered index does not have a separate table.
+
+View is more like a virtual table
+CMD: Create View vwMyView as Select id,name,deptname from tblEmp join tblDept ON tblEmp.id = tblDept.Id;
+
+sp_helptext vwMyView;
+
+IMP: views are just stored SQL queries. 
+updating views will update the base tables 
+iNDEXED Views:
+Indexed-View : When we create a Clustered Index on a view then views gets material;ized thus can keep data too.
+
+Limitations of a View: You cannot pass parameter to a view. If one needs to pass parameter then either call the view and use wqhere cvlause if not then use Fucntions
+
+Views cannot be created for a temporary tables.
+
+Triggers are of 3 types:
+1. DML
+2. DDL
+3. LogOn
+
+DML trigger asre affcted by insert, update and delete.
+
+DML Trigger are again of two types:
+a. After triggers
+b. Instead of triggers
+
+a. After Insert triggers: it is triggered when insert statement is run. 
+
+Create trigger tr_Emps_Audit
+On Emps
+ For Insert
+ As
+ Begin
+ --Declare @Id int
+ Select *  from inserted
+ End
+ 
+ Now "inserted" depicts the row tha tis getting inserted. So basially this above command will output the inserted row.
+ 
+  Insert into Emps values (3,'Tanuj',4500,'M', 2);
+  after running this above command we will again see the same as output. as this will asct as "Inserted".
+  
+  
+  Example:
+  CMD: create trigger tr_Emps_Audit
+On Emps
+ For Insert
+ As
+ Begin
+ Declare @Id int
+Select  @Id = Id  from inserted
+insert into Audit Values(1, 'Id inserted is ' + cast(@Id as nvarchar(5)));
+
+ End
+ 
+ DELETED:
+ CMD:  create trigger tr_Emps_Audit_del
+On Emps
+ For Delete
+ As
+ Begin
+ Declare @Id int
+Select  @Id = Id  from deleted
+insert into Audit Values(1, 'Id deleted is ' + cast(@Id as nvarchar(5)));
+ End
+ 
+ Update trigggers
+ 
+ Create trigger tr_tblEMps_Update
+on Emps
+ For Update
+ As
+ Begin
+ select * from deleted // it holds the OLD value that is getting updated
+ Select * from inserted  // It holds the NEW valuie that is getting updated to.
+ End
+ 
+ update  Emps set id = 4 where id = 5;
+ 
+ deleted will contain data related to id = 5
+ updated will contain data related to id = 4
+ 
+ Normalization:
+ is the process of minimizing data redundaNCY which in turns provides data consistency
+ Problems with Data Redundancy:
+ a. Disk Space Wastage
+ b. Data Inconsistency
+ c. DML queries can be slow
+ 
+1 NF:
+ Data should be automic in each column we should not have comma separated values.
+ Identify each record using uniquely via PK
+2 NF:Move redundant data to separa to table and join with FK Relationship 
+3 NF: All the columns must be dependent fully dependent on PK. suppose we have a salary column and annual salary column 
+then annual salary isa dependent on salary which is not a PK. So we need to remove annual salary columns.   
+
+Derived Tables:
+Select DeptName, TotalEmployees
+from
+{
+Select DeptName, DepartmentId, COUNT(*) as TotalEmployees
+from tblEmployee
+join tblDepartment
+on tblEmployee.DepartmentId = tblDepartment.DeptIdgroup by DeptName, DepartmentId
+}
+as EmployeeCount
+where TotalEmployees > = 2
+
+Stored Procedure and Transaction
+
+create table tblMailAddress(Id int, state nvarchar(10));
+
+create table tblPostalAddress(Id int, state nvarchar(10));
+
+Insert into tblMailAddress values(1, 'Dubaai');
+Insert into tblPostalAddress values(1, 'Indiaa');
+
+select * from tblMailAddress;
+select * from tblPostalAddress;
+
+
+Create Procedure spUpdateAddress
+	As
+Begin
+		Begin Try
+			Begin Transaction
+				Update tblMailAddress set state = 'Dubai' where state = 'Dubaai'
+				Update tblPostalAddress set state = 'India' where state = 'Indiaa'
+				Commit Transaction
+		End Try
+		Begin Catch
+			Rollback Transaction 
+		End Catch
+End
+
+After running sproc the data will be Dubai and India
+
+Alter Procedure spUpdateAddress
+	As
+Begin
+		Begin Try
+			Begin Transaction
+				Update tblMailAddress set state = 'North' where state = 'Dubai'
+				Update tblPostalAddress set state = 'IndiaMoreThan10character' where state = 'India'
+				Commit Transaction
+		End Try
+		Begin Catch
+			Rollback Transaction
+			Print 'Exception' 
+		End Catch
+End
+
+Now the data will not be updated in both the tables because of more tha 10 character and both the updates are under one transcation so both will get rolledback
+
+Once a transaction is going on like below
+	Begin Transaction
+				Update tblMailAddress set state = 'North' where state = 'Dubai'
+				and if you try to go to another tab and access that data you cannot. this is because that record is locked and unless the transaction is commited
+				
+				that row is not accesible.
+	Also ACID
+	A-> Atomicity: 
+	C->Consistenct
+	I-> Isolated
+	D->Durable
+	
+	SubQuery Using JOIN and NOT IN
+	
+Create table tblProducts(
+Id int identity Primary Key,
+Name nvarchar(50),
+Description nvarchar(250)
+)
+
+Create table tblProductSales(
+Id int Primary Key identity,
+ProductId int foreign key references tblProducts(Id),
+UnitPrice int,
+QuantitySold int
+)
+
+
+INsert into tblProducts values('Tv','goood idiot box');
+INsert into tblProducts values('Lapgtop','goood laptop box');
+INsert into tblProducts values('Desktop','goood DEsktop box');
+insert into tblProductSales values(3,450, 5);
+insert into tblProductSales values(2,250, 7);
+insert into tblProductSales values(3,450, 4);
+insert into tblProductSales values(3,450, 9);
+
+select * from tblProducts;
+select * from tblProductSales;
+select Name from tblProducts where Id not in (Select ProductId from tblProductSales);
+
+select tblProducts.Name, tblProductSales.ProductId  from tblProducts left outer join tblProductSales on tblProducts.id = tblProductSales.ProductId
+
+where tblProductSales.ProductId is null
+
+== showing sum f producst sold
+
+select tblProducts.Name , sum(tblProductSales.QuantitySold) from tblProducts left join tblProductSales on tblProducts.Id = tblProductSales.ProductId
+
+group by tblProducts.Name;
+
+select tblProducts.Name , (Select SUM(tblProductSales.QuantitySold) from tblProductSales where tblProducts.Id = tblProductSales.ProductId) as qtysold
+from tblProducts;
+
+CMD:
+
+Get all tables in a database
+CMD: select * from sysobjects where xtype = 'U';
+CMD: select * from sys.tables
+Get all functions
+CMD: select * from sysobjects where xtype = 'FN';
+Get all Sproc
+CMD: select * from sysobjects where xtype = 'P';
+select * from sys.procedures;
+Get all views
+CMD: select * from sysobjects where xtype = 'v';
+
+Check if a table exists
+If not exists  (Select * from  information_schema.tables where table_name = 'tblEmployee')
+
+ReRunnable Scripts
+Use [Sample] // this makes sure we are targetting a particular database.
+if not exists(Select * from INFORMATION_SCHEMA.COLUMNS where COLUMN_NAME='EmailAddress' and TABLE_NAME = 'tblEmployee' and TABLE_SCHEMA='dbo') 
+Begin
+ ALTER TABLE tblEmployee
+ ADD EmailAddress nvarchar(50)
+End
+Else
+BEgin
+ Print 'Column EmailAddress already exists'
+End
+
+ALter Table Coulmn
+CMD: Alter table tblEmployee
+Alter column Salary int
+
+Optional Stored Procedures
+CMD:
+
+Create  table tblEmp
+(
+	Id int Primary Key identity,
+	Name nvarchar(100),
+	Salary int
+);
+
+Insert into tblEmp values('Tanuj', 40000);
+
+execute spInserttblEmp @salary = 40000        
+select * from tblEmp;        
+
+Create Procedure spInserttblEmp
+@Name nvarchar(100) = NULL,
+@Salary int = NULL 
+As
+Begin
+	Select * from  tblEmp Where (Name = @Name or @Name is NULL) AND  (Salary = @Salary or @Salary IS NULL)
+End    
+
+
+Concurrency Problems:
+- Dirty Reads
+- Lost Updates
+- NonRepeatable Reads
+- Phantom Reads
+
+SQL Server Transaction Isoliation Levels
+- Read Uncommited
+- Read Commited : Default Isolation Level of SQL Server
+- Repeatable Read
+- Snapshot
+- Serializable                                 
+
+Basically if you run a statement  like this
+begin transaction
+update tblEmp set salary = 5600 where salary = 4500
+
+and then if you select * from tblEMp from same tab you will see result of 5600 but when you go to other tab in SDQL Server
+and try to load the value it wont load as the transaction is not yet commited so either the transaction is commited then
+value will permamnently changed or if it ias rollback then original salary 450 will be availbale in any case salry is not
+completely decided yet so none of the other conncetion can access tahtdata. Basically it is blocked until the initial transaftion
+is completed by ENd Transaction command.
+
+SQL Server default Isolation Level Read Commited. But here we have certain data that is not commited yet so SQL Server cannot Read it yet.
+Only when a data is commited it ias allowed to be read.
+
+Now in order to read dirty data or uncommited data suppos you ran a transaction like below
+
+Begin Tran
+Update tblInventory set ItemsInStock = 9 where Id=1
+-- Billing the customer
+Waitfor Delay '00:00:15'
+-- Insufficient Funds. Rollback transaction
+* Rollback Transaction
+and just quickly if you run below statemnet'
+
+
+Select * from tblInventory where Id=1 => this wuill not work so now set the transaction level to read uncommited like below
+
+Set Transaction Isolation Level Read Uncommitted
+Select * from tblInventory where Id=1
+
+OR
+
+Select * from tblInventory (NOLOCK) where Id=1
+
+Now you can read the data as 9 where as it is being rolled back at *.
+SO avbove is DIrty Read this happend when Isolation level is Read Uncommited
+
+IMPORTANT: It is very imortant to note that if you just have a select statement in transaction 1 then in that case if you go to second tab and then
+uou can easily run a select statement. So SQL Server is smart enoguh to know that there is no uncommited data in first transaction. It is just a read
+/select statement so there is no point blocking second transaction. However if there is an update statement in transaction 1 then in that case we have 
+a uncommited data so transaction 2 will be blocked.
+
+
+SQL Server Lost Update. It happens even in SQL Default Read Commited case also. Becasue as we discussed above that read is always allowed as long any uncommited 
+cahnges are not detected. see below example
+select * from tblInventory;
+output = 10
+
+                                                             steps
+Begin Tran
+Declare @ItemInStock int
+Select @ItemInStock = numInStock from tblInventory            first
+-- till here no uncommited cvhange are detected so **
+WaitFor Delay '00:00:10'
+
+Set @ItemInStock = @ItemInStock - 1;
+Update tblInventory set numInStock = @ItemInStock where id = 1;        forth
+commit transaction
+
+
+Begin Tran
+Declare @ItemInStock int
+** select staement is working fine as no uncommited changes yet.
+Select @ItemInStock = numInStock from tblInventory                 second
+
+WaitFor Delay '00:00:01'
+
+Set @ItemInStock = @ItemInStock - 2;
+Update tblInventory set numInStock = @ItemInStock where id = 1;   third
+commit transaction
+
+
+Expected output = 7
+Output = 9
+
+Repeatable Read Problems
+So if we are selecting one data in tran saction one and then in other transaction two we are updating that data. then in transaction one if we read the smae data
+it will not match becasue it has been updated. this is called repetable read problem. TO solve it we need to add Repetable read isolation level. So transacton 2 will
+wait untill transaction 1 is compelted successfully.
+
+
+-- Transaction 1
+Set transaction isolation level repeatable read
+Begin Transaction
+Select ItemsInStock from tblInventory where Id = 1
+
+-- Do Some work
+waitfor delay '00:00:10'
+
+Select ItemsInStock from tblInventory where Id = 1
+Commit Transaction
+
+-- Transaction 2
+Update tblInventory set ItemsInStock = 5 where Id = 1
+
+Phantom Problem : here we talk about some range valeus
+
+
+-- select * from tblInventory;
+set transaction isolation level repeatable read
+begin tran
+select * from tblInventory where numInStock < 500;
+
+waitfor delay '00:00:10'
+
+select * from tblInventory where numInStock < 500;
+commit transaction
+
+rollback transaction
+
+CMD: transaction - 2 insert into tblInventory values(340);
+
+in this case transaction 1 gives different output.
+
+Now to avoid it we do Serialization Isolation Levels
+
+set transaction isolation level serializable
+begin tran
+select * from tblInventory where numInStock < 500; ^^
+
+waitfor delay '00:00:10'
+
+select * from tblInventory where numInStock < 500;  ^^
+commit transaction
+
+rollback transaction
+
+
+Tran 2 -insert into tblInventory values(300);
+
+Now tran 1 will give same output in both (^^) cases 
+Note: There is subtle difference between Repeatbal;e read and Serializable
+Repeatable read prevents only non-repeatable read. Repeatable read isolation level ensures that the data that one transaction has read, will be prevented from being updated or deleted by any other transaction, but it doe not prevent new rows from being inserted by other transactions resulting in phantom read concurrency problem.
+
+Serializable prevents both non-repeatable read and phantom read problems. Serializable isolation level ensures that the data that one transaction has read, will be prevented from being updated or deleted by any other transaction. It also prevents new rows from being inserted by other transactions, so this isolation level prevents both non-repeatable read and phantom read problems.
+
+What is the difference between serializable and snapshot isolation levels
+Serializable isolation is implemented by acquiring locks which means the resources are locked for the duration of the current transaction. This isolation level does not have any concurrency side effects but at the cost of significant reduction in concurrency.
+
+Snapshot isolation doesn't acquire locks, it maintains versioning in Tempdb. Since, snapshot isolation does not lock resources, it can significantly increase the number of concurrent transactions while providing the same level of data consistency as serializable isolation does.
+
+
+
+ISOLATION LEVEL:     Dirty Reads  Lost Update    NOn Repeatable Reads    Phantom Reads
+Read Uncommitted         YES         YES           YES                    YES
+Read Committed           NO           YES          YES                     YES
+Repeatable Read          NO            NO           NO                     YES
+Snapshot                 NO           NO            NO`                      NO
+Serializable             NO           NO             NO                      NO
+In this video we will discuss a scenario when a deadlock can occur in SQL Server.
+
+When can a deadlock occur
+In a database, a deadlock occurs when two or more processes have a resource locked, and each process requests a lock on the resource that another process has already locked. Neither of the transactions here can move forward, as each one is waiting for the other to release the lock.
+
+When deadlocks occur, SQL Server will choose one of processes as the deadlock victim and rollback that process, so the other process can move forward. The transaction that is chosen as the deadlock victim will produce the following error.
+Msg 1205, Level 13, State 51, Line 1
+Transaction (Process ID 57) was deadlocked on lock resources with another process and has been chosen as the deadlock victim. Rerun the transaction.
+
+SQL script to create the tables and populate them with test data
+Create table TableA
+(
+ Id int identity primary key,
+ Name nvarchar(50)
+)
+Go
+
+Insert into TableA values ('Mark')
+Go
+
+Create table TableB
+(
+ Id int identity primary key,
+ Name nvarchar(50)
+)
+Go
+
+Insert into TableB values ('Mary')
+Go
+
+The following 2 transactions will result in a dead lock. Open 2 instances of SQL Server Management studio. From the first window execute Transaction 1 code and from the second window execute Transaction 2 code.
+
+-- Transaction 1
+Begin Tran
+Update TableA Set Name = 'Mark Transaction 1' where Id = 1
+
+-- From Transaction 2 window execute the first update statement
+
+Update TableB Set Name = 'Mary Transaction 1' where Id = 1
+
+-- From Transaction 2 window execute the second update statement
+Commit Transaction
+
+-- Transaction 2
+Begin Tran
+Update TableB Set Name = 'Mark Transaction 2' where Id = 1
+
+-- From Transaction 1 window execute the second update statement
+
+Update TableA Set Name = 'Mary Transaction 2' where Id = 1
+
+-- After a few seconds notice that one of the transactions complete 
+-- successfully while the other transaction is made the deadlock victim
+Commit Transaction
+
+n this video we will discuss 
+1. How SQL Server detects deadlocks
+2. What happens when a deadlock is detected
+3. What is DEADLOCK_PRIORITY
+4. What is the criteria that SQL Server uses to choose a deadlock victim when there is a deadlock
+
+This is continuation to Part 78, please watch Part 78 before proceeding.
+
+How SQL Server detects deadlocks
+Lock monitor thread in SQL Server, runs every 5 seconds by default to detect if there are any deadlocks. If the lock monitor thread finds deadlocks, the deadlock detection interval will drop from 5 seconds to as low as 100 milliseconds depending on the frequency of deadlocks. If the lock monitor thread stops finding deadlocks, the Database Engine increases the intervals between searches to 5 seconds.
+
+What happens when a deadlock is detected
+When a deadlock is detected, the Database Engine ends the deadlock by choosing one of the threads as the deadlock victim. The deadlock victim's transaction is then rolled back and returns a 1205 error to the application. Rolling back the transaction of the deadlock victim releases all locks held by that transaction. This allows the other transactions to become unblocked and move forward.
+
+What is DEADLOCK_PRIORITY
+By default, SQL Server chooses a transaction as the deadlock victim that is least expensive to roll back. However, a user can specify the priority of sessions in a deadlock situation using the SET DEADLOCK_PRIORITY statement. The session with the lowest deadlock priority is chosen as the deadlock victim.
+
+Example : SET DEADLOCK_PRIORITY NORMAL
+
+DEADLOCK_PRIORITY 
+1. The default is Normal
+2. Can be set to LOW, NORMAL, or HIGH
+3. Can also be set to a integer value in the range of -10 to 10.
+ LOW : -5
+ NORMAL : 0
+ HIGH : 5
+
+What is the deadlock victim selection criteria
+1. If the DEADLOCK_PRIORITY is different, the session with the lowest priority is selected as the victim
+2. If both the sessions have the same priority, the transaction that is least expensive to rollback is selected as the victim
+3. If both the sessions have the same deadlock priority and the same cost, a victim is chosen randomly
+
+
+VICTOM Selction part - 1 DEFAULT CASE
+Create table TableA
+(
+ Id int identity primary key,
+ Name nvarchar(50)
+)
+Go
+
+Insert into TableA values ('Mark')
+Insert into TableA values ('Ben')
+Insert into TableA values ('Todd')
+Insert into TableA values ('Pam')
+Insert into TableA values ('Sara')
+Go
+
+Create table TableB
+(
+ Id int identity primary key,
+ Name nvarchar(50)
+)
+Go
+
+Insert into TableB values ('Mary')
+Go
+
+Open 2 instances of SQL Server Management studio. From the first window execute Transaction 1 code and from the second window execute Transaction 2 code. We have not explicitly set DEADLOCK_PRIORITY, so both the sessions have the default DEADLOCK_PRIORITY which is NORMAL. So in this case SQL Server is going to choose Transaction 2 as the deadlock victim as it is the least expensive one to rollback.
+
+-- Transaction 1
+Begin Tran
+Update TableA Set Name = Name + ' Transaction 1' where Id IN (1, 2, 3, 4, 5)
+
+-- From Transaction 2 window execute the first update statement
+
+Update TableB Set Name = Name + ' Transaction 1' where Id = 1
+
+-- From Transaction 2 window execute the second update statement
+Commit Transaction
+
+
+-- Transaction 2
+Begin Tran
+Update TableB Set Name = Name + ' Transaction 2' where Id = 1
+
+-- From Transaction 1 window execute the second update statement
+
+Update TableA Set Name = Name + ' Transaction 2' where Id IN (1, 2, 3, 4, 5)
+
+-- After a few seconds notice that this transaction will be chosen as the deadlock
+-- victim as it is less expensive to rollback this transaction than Transaction 1
+Commit Transaction
+
+DEADLOCK VIctim based on priority
+
+In the following example we have set DEADLOCK_PRIORITY of Transaction 2 to HIGH. Transaction 1 will be chosen as the deadlock victim, because it's DEADLOCK_PRIORITY (Normal) is lower than the DEADLOCK_PRIORITY of Transaction 2.
+
+-- Transaction 1
+Begin Tran
+Update TableA Set Name = Name + ' Transaction 1' where Id IN (1, 2, 3, 4, 5)
+
+-- From Transaction 2 window execute the first update statement
+
+Update TableB Set Name = Name + ' Transaction 1' where Id = 1
+
+-- From Transaction 2 window execute the second update statement
+Commit Transaction
+
+
+-- Transaction 2
+SET DEADLOCK_PRIORITY HIGH
+GO
+Begin Tran
+Update TableB Set Name = Name + ' Transaction 2' where Id = 1
+
+-- From Transaction 1 window execute the second update statement
+
+Update TableA Set Name = Name + ' Transaction 2' where Id IN (1, 2, 3, 4, 5)
+
+-- After a few seconds notice that Transaction 1 will be chosen as the deadlock victim as it's 
+-- DEADLOCK_PRIORITY (Normal) is lower than the DEADLOCK_PRIORITY this transaction (HIGH)
+
+Stored Procedure to create deadlocked
+USE [Sample]
+GO
+/****** Object:  StoredProcedure [dbo].[spTransaction2]    Script Date: 05-03-2018 01:26:34 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER procedure [dbo].[spTransaction2]
+as
+Begin
+ Begin Tran
+ Update TableB Set Name = 'Mark Transaction 2' where Id = 1
+ Waitfor delay '00:00:05'
+ Update TableA Set Name = 'Mary Transaction 2' where Id = 1
+ Commit Transaction
+End
+
+USE [Sample]
+GO
+/****** Object:  StoredProcedure [dbo].[spTransaction1]    Script Date: 05-03-2018 01:26:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER procedure [dbo].[spTransaction1]
+as
+Begin
+ Begin Tran
+ Update TableA Set Name = 'Mark Transaction 1' where Id = 1
+ Waitfor delay '00:00:05'
+ Update TableB Set Name = 'Mary Transaction 1' where Id = 1
+ Commit Transaction
+End
+
+Now we will learn DDL Triggers:
+DDL Triggers fire in respopnse to DDL Operations such as Alter, Create ,Drop
+When to Use DDL Triggers:
+- If you want to execute some code in response tp a specific DDL Event
+- To prevent certain changes to your database schema
+- Audit the changes that the users are making to the database structure
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on Database //scope of this trigger will be just for the current database
+For CREATE_TABLE
+AS
+BEGIN
+Print 'New Table Created'
+END
+
+CMD: Create Table temp(Id int);
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on Database
+For CREATE_TABLE, DROP_TABLE, ALTER_TABLE
+AS
+BEGIN
+Print 'Table Changed'
+END
+
+CMD: Drop Table Temp;
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on ALL SERVER //scope of this trigger will be  for all the server
+For CREATE_TABLE
+AS
+BEGIN
+Print 'New Table Created'
+END
+
+CMD: Create Table temp(Id int);
+
+CMD: Create TRIGGER tr_DDL_OnCreate
+on Database
+For CREATE_TABLE, DROP_TABLE, ALTER_TABLE
+AS
+BEGIN
+Print 'Table Changed'
+END
+
+CMD: Drop Table Temp;
+
+// above trigger will work across all the databases.
+
+DIsbale a trigger:
+
+CMD: Disable TRIGGER tr_DDL_OnCreate ON ALL SERVER    
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
 
 
 
