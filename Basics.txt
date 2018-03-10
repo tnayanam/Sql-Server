@@ -1510,6 +1510,21 @@ Group BY
             (Gender) ,   -- Sum of Salary by Gender
             ()     -- Grand Total
       )
+	 ---------GET GRAND SUM AT THE END:
+	 
+	 CMD:
+	 
+	 
+select Country, SUM(Salary)  as Salary from tmp3 group by COUNTry
+
+union all
+
+Select NULL, SUM (SALARY) from tmp3;
+
+India	3000
+UK	15500
+USA	8200
+NULL	26700
 
  
 
