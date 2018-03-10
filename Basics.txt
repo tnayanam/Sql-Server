@@ -1387,6 +1387,34 @@ ion first case filtering will happpen initially and then sum will be done only f
 where in second case sum of all the groups will occue and then filtering will happen.
 So HAVCING IS SLOWER
 
+
+SAVE DATATABLE DATA DIORECTLY IN ONE GO TO DATABASE VIA STORED PROCEDURE.
+There is the VS Project changes that is easy and then there are SQL Server cahanges like below.
+CREATE Type EmpTableType AS TABLE
+(
+Id int primary key,
+Name nvarchar(100),
+Address nvarchar(100)
+);
+Create Proc spInsertEmployee
+@EmpTableType EmpTableType READONLY
+AS
+BEGIN
+Insert into Emplo
+Select * FROM @EmpTableType
+END
+select * from emplo
+
+
+CREATE TAble Emplo
+(
+Id int primary key,
+Name nvarchar(100),
+Address nvarchar(100)
+)
+truncate table emplo
+
+
  
 
 
