@@ -1525,6 +1525,96 @@ India	3000
 UK	15500
 USA	8200
 NULL	26700
+------------------------
+
+ROLLUP in SQL Server is used to do aggregate operation on multiple levels in hierarchy. 
+
+Let us understand Rollup in SQL Server with examples. We will use the following Employees table for the examples in this video. Retrieve Salary by country along with grand total
+
+There are several ways to achieve this. The easiest way is by using Rollup with GroupBy.
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY ROLLUP(Country)
+
+India	3000
+UK	15500
+USA	8200
+NULL	26700
+
+The above query can also be rewritten as shown below
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country WITH ROLLUP
+
+We can also use UNION ALL operator along with GROUP BY
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country
+
+UNION ALL
+
+SELECT NULL, SUM(Salary) AS TotalSalary
+FROM Employees
+
+We can also use Grouping Sets to achieve the same result
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY GROUPING SETS
+(
+ (Country),
+ ()
+)
+
+Let's look at another example. 
+
+Group Salary by Country and Gender. Also compute the Subtotal for Country level and Grand Total as shown below.
+
+Using ROLLUP with GROUP BY
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY ROLLUP(Country, Gender)
+
+India	Male	3000
+India	NULL	3000
+UK	FeMale	9000
+UK	Male	6500
+UK	NULL	15500
+USA	FeMale	3200
+USA	Male	5000
+USA	NULL	8200
+NULL	NULL	26700
+
+OR
+
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country, Gender WITH ROLLUP
+
+Using UNION ALL with GROUP BY
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country, Gender
+
+UNION ALL
+
+SELECT Country, NULL, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country
+
+UNION ALL
+
+SELECT NULL, NULL, SUM(Salary) AS TotalSalary
+FROM Employees
+
+Using GROUPING SETS
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY GROUPING SETS
+(
+ (Country, Gender),
+ (Country),
+ ()
+)
 
  
 
