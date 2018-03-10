@@ -1318,6 +1318,45 @@ DIsbale a trigger:
 
 CMD: Disable TRIGGER tr_DDL_OnCreate ON ALL SERVER    
 
+Select INTO 
+Select into selects data from one table and insert data into a NEW table. Note that if tables already exists then backup wont be created. becasuee bwlow command tries t buikd new table
+if table already exists then we will get error.
+Usage:
+1. Copy all rows and columns from an existing table to a new table. genenrally helps in creating back ups.
+Select * from Employee;
+
+Select * into TblBackUp from Employee;  //note that this tblbackUp doe snot exist already. this single command creates the table and add all the columns as well as the rows.
+
+select * from tblBackUp;
+
+2. Select * into Sample1.dbo.TblE from Employee;
+Now this will craete the same back up but in a differnt database.
+
+3. In this case onle the name columns will be backedup.
+ CMD: select Name into tblOnlyName from tblEmployee; 
+ 
+ 4. Now only some rows back up
+ CMD: 
+select Name into tblOnlyNameWithS from tblEmployee where Name like '%S%';
+
+5. Copy columns from 2 or more tables in a new table
+CMD: Select * INTO tblEmployeeBackUP FROM Employees
+INNER JOIN Departments
+ON Employees.DeptId = Departments.DepartmentId
+6. Now supose you want to create a table replica but do nt want to copy
+that data and you do not want to use create table thenyou can se below shortcut
+
+CMD: Select * INTO EmployeeBackUP FROM tblEMP WHERE -1<>1;
+Since this conditrion will never match and only the table will be created.
+7. So till now we are trying to create a new table and insert data into it from anotyhjer table
+But suppose if the back up table already exists in this case if EmployeeBackUP table clready exists and then 
+if we run below command 
+Select * INTO EmployeeBackUP FROM tblEMP;
+
+it will throw errore stating that back up table al;reday exists.
+So in order to copy data in an exixting table we will have to use 
+CMD: INSER INTO EmployeeBACKUP Selecty * FROM EMployee;
+  
 
 
 
