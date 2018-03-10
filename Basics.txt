@@ -1356,6 +1356,40 @@ Select * INTO EmployeeBackUP FROM tblEMP;
 it will throw errore stating that back up table al;reday exists.
 So in order to copy data in an exixting table we will have to use 
 CMD: INSER INTO EmployeeBACKUP Selecty * FROM EMployee;
+
+Difference between Where and Having
+Create table Sales(name nvarchar(100), num int);
+
+insert into Sales values('iPhone', 3000);
+insert into Sales values('Android', 2000);
+insert into Sales values ('Sim', 1000);
+insert into Sales values('iPhone', 4000);
+
+output needed
+iPhone 7000
+Androiod 2000
+Sim 1000
+
+CMD: Select  name, Sum(num) from Sales group by name having Sum(num) > 1500; this will work
+CMD: Select name, Sum(num) from Sales where Sum(num) > 1500 group by name ; this will error out
+We cannot apply aggregate in a where clause reason being where first tries to fiol;ter the rows and then aggregation is applied. But in our query
+we aer trying to filter based on aggregation which where does not do.
+However in case of having all the aggregation is done iniitally and then the having ocndition is checked. 
+
+Where clause is used for filtering Rows where as Having Clause is used for filtering groups.
+
+Suppose we want output as sales only for iPhone then we have two options'
+CMD 1: select name, SUM(num) from Sales where name like 'iPhone' group by name;
+
+CMD 2: Select name ,SUM(num) from Sales group by name having name like 'iPhone';
+
+ion first case filtering will happpen initially and then sum will be done only for iPhone
+where in second case sum of all the groups will occue and then filtering will happen.
+So HAVCING IS SLOWER
+
+ 
+
+
   
 
 
