@@ -1804,6 +1804,127 @@ If you want just the last day instead of the full date, you can use DATEPART fun
 SELECT Name, DateOfBirth, DATEPART(DD,EOMONTH(DateOfBirth)) AS LastDay
 FROM Employees
 
+IDENTITY
+Making aq columns Identity auto increment it and we dont need to supply value for it while inserting other values.
+Default
+CREATE TABLE Orders (
+    ID int NOT NULL,
+    OrderNumber int NOT NULL,
+    OrderDate date DEFAULT GETDATE()
+);
+insert into Orders (ID, OrderNumber)values(1,2)
+
+select * from Orders;
+1	2	2018-03-10 // AUTOMATICALLY A DEFUALT DATE IS PROVBIDED IF NTHING IS INSERTED
+
+GUID:
+
+It is a 16 byte binary data type that is unique across databases tables and servers.
+CMD: Declare @id UNIQUEIDENTIFIER
+Set @id = NEWID()
+Select @id
+
+Problem if we don't use the GUID 
+
+Create table IndiaDB 
+( 
+ Id int primary key identity,
+ Name nvarchar(100)
+ );
+ Insert into IndiaDB values('Tanuj');
+ Insert into IndiaDB values ('Rajesh');
+ Insert into IndiaDB values('Rohit');
+ Insert into IndiaDB values('Jagdish');
+ Insert into IndiaDB values('Mallu');
+
+ select * from IndiaDB
+
+
+
+ Use Pluto
+ Create table USADB 
+( 
+ Id int primary key identity,
+ Name nvarchar(100)
+ );
+ Insert into USADB values('Jannie');
+ Insert into USADB values ('Roonie');
+ Insert into USADB values('Danny');
+ Insert into USADB values('Janet');
+ Insert into USADB values('Carla');
+
+
+ Select * from Sample.dbo.IndiaDB	
+ UNION ALL
+ Select * from Pluto.dbo.USADB;
+
+ Create table Customers
+ (
+ Id int primary key,
+ Name nvarchar(100)
+ )
+ Insert into Customers
+ 
+ Select * from Sample.dbo.IndiaDB	
+ UNION ALL
+ Select * from Pluto.dbo.USADB;
+ 
+ Error: Msg 2627, Level 14, State 1, Line 38
+Violation of PRIMARY KEY constraint 'PK__Customer__3214EC077AD66FA2'. Cannot insert duplicate key in object 'dbo.Customers'. The duplicate key value is (1).
+The statement has been terminated.
+problem is arising because both table are in differnt databases and also they have id same.
+
+
+Working Example:
+Create table IndiaDB2
+( 
+ Id uniqueidentifier primary key default newid(),
+ Name nvarchar(100)
+ );
+ Insert into IndiaDB2 values(default,'Tanuj');
+ Insert into IndiaDB2 values (default,'Rajesh');
+ Insert into IndiaDB2 values(default,'Rohit');
+ Insert into IndiaDB2 values(default,'Jagdish');
+ Insert into IndiaDB2 values(default,'Mallu');
+
+ select * from IndiaDB2
+
+
+
+ Use Pluto
+ Create table USADB2 
+( 
+ Id uniqueidentifier primary key default newid(),
+ Name nvarchar(100)
+ );
+ Insert into USADB2 values(default,'Jannie');
+ Insert into USADB2 values (default, 'Roonie');
+ Insert into USADB2 values(default, 'Danny');
+ Insert into USADB2 values(default, 'Janet');
+ Insert into USADB2 values(default, 'Carla');
+
+
+ Select * from Sample.dbo.IndiaDB2	
+ UNION ALL
+ Select * from Pluto.dbo.USADB2;
+
+ Create table Customer3
+ (
+ Id uniqueidentifier  primary key,
+ Name nvarchar(100)
+ )
+ Insert into Customer3
+ 
+ Select * from Sample.dbo.IndiaDB2	
+ UNION ALL
+ Select * from Pluto.dbo.USADB2;
+
+ select * from Customer3
+ 
+ Advantage:
+ Unique across server,table, databse
+ Disadvantage:
+ Size
   
 
 
