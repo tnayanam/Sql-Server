@@ -1630,6 +1630,19 @@ RUNNING Total
 Select Id, Name, Salary, SUM(Salary) over (order by Id) from tblEmp;
 1	Tanuj	40000	40000
 2	Hello	4500	44500
+TRY PARSE, IIF
+select IIF(TRY_PARSE('99' as INT) IS NULL,'conversion fail', 'conversion success' )
+
+ IIF(condition,true, false)
+
+try_parse does not throw an exception if conversion fails, it simply returns NULL.
+if provided string cannot be converted into specified datatype it reuturns NULL.
+
+SELECT 
+CASE WHEN TRY_PARSE('ABC' AS INT) IS NULL
+  THEN 'Conversion Failed'
+  ELSE 'Conversion Successful'
+END AS Result
 
 
   
