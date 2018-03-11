@@ -1925,6 +1925,38 @@ Create table IndiaDB2
  Unique across server,table, databse
  Disadvantage:
  Size
+ 
+ How to check if a GUID is NULL : Checking if a GUID is null is straight forward in SQL Server. Just use IS NULL keywords as shown below.
+
+Declare @MyGuid Uniqueidentifier
+
+If(@MyGuid IS NULL)
+Begin
+     Print 'Guid is null'
+End
+Else
+Begin
+     Print 'Guid is not null'
+End
+
+In the above example, since @MyGuid is just declared and not initialised, it prints the message "Guid is null"
+
+Now let's say, if a GUID variable is NULL, then we want to initialise that GUID variable with a new GUID value. If it's not NULL, then we want to retain it's value. One way to do this is by using an IF condition as shown below.
+
+Declare @MyGuid UniqueIdentifier
+
+If(@MyGuid IS NULL)
+Begin
+     Set @MyGuid = NEWID()
+End
+
+Select @MyGuid
+
+We can achieve exactly the same thing by using ISNULL() function. The advantage of using ISNULL() function is that, it reduces the amount of code we have to write.
+
+Declare @MyGuid UniqueIdentifier
+Select ISNULL(@MyGuid, NewID())
+
   
 
 
