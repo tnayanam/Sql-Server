@@ -1617,6 +1617,19 @@ GROUP BY GROUPING SETS
 )
 
  
+ 
+ FOR DEBUGGING use the SSMS Debug option and you can debug the Store4 proc as well l;ike below
+ 
+DECLARE @TargetNumber INT
+SET @TargetNumber = 10
+EXECUTE spPrintEvenNumbers @TargetNumber
+Print 'Done'
+
+The breakpoint will go inside the sproc as well. just liek VS Debugging.
+RUNNING Total
+Select Id, Name, Salary, SUM(Salary) over (order by Id) from tblEmp;
+1	Tanuj	40000	40000
+2	Hello	4500	44500
 
 
   
