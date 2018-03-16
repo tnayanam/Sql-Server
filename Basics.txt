@@ -1368,6 +1368,646 @@ End
 
 
 
+Select INTO 
+Select into selects data from one table and insert data into a NEW table. Note that if tables already exists then backup wont be created. becasuee bwlow command tries t buikd new table
+if table already exists then we will get error.
+Usage:
+1. Copy all rows and columns from an existing table to a new table. genenrally helps in creating back ups.
+Select * from Employee;
+
+Select * into TblBackUp from Employee;  //note that this tblbackUp doe snot exist already. this single command creates the table and add all the columns as well as the rows.
+
+select * from tblBackUp;
+
+2. Select * into Sample1.dbo.TblE from Employee;
+Now this will craete the same back up but in a differnt database.
+
+3. In this case onle the name columns will be backedup.
+ CMD: select Name into tblOnlyName from tblEmployee; 
+ 
+ 4. Now only some rows back up
+ CMD: 
+select Name into tblOnlyNameWithS from tblEmployee where Name like '%S%';
+
+5. Copy columns from 2 or more tables in a new table
+CMD: Select * INTO tblEmployeeBackUP FROM Employees
+INNER JOIN Departments
+ON Employees.DeptId = Departments.DepartmentId
+6. Now supose you want to create a table replica but do nt want to copy
+that data and you do not want to use create table thenyou can se below shortcut
+
+CMD: Select * INTO EmployeeBackUP FROM tblEMP WHERE -1<>1;
+Since this conditrion will never match and only the table will be created.
+7. So till now we are trying to create a new table and insert data into it from anotyhjer table
+But suppose if the back up table already exists in this case if EmployeeBackUP table clready exists and then 
+if we run below command 
+Select * INTO EmployeeBackUP FROM tblEMP;
+
+it will throw errore stating that back up table al;reday exists.
+So in order to copy data in an exixting table we will have to use 
+CMD: INSER INTO EmployeeBACKUP Selecty * FROM EMployee;
+
+Difference between Where and Having
+Create table Sales(name nvarchar(100), num int);
+
+insert into Sales values('iPhone', 3000);
+insert into Sales values('Android', 2000);
+insert into Sales values ('Sim', 1000);
+insert into Sales values('iPhone', 4000);
+
+output needed
+iPhone 7000
+Androiod 2000
+Sim 1000
+
+CMD: Select  name, Sum(num) from Sales group by name having Sum(num) > 1500; this will work
+CMD: Select name, Sum(num) from Sales where Sum(num) > 1500 group by name ; this will error out
+We cannot apply aggregate in a where clause reason being where first tries to fiol;ter the rows and then aggregation is applied. But in our query
+we aer trying to filter based on aggregation which where does not do.
+However in case of having all the aggregation is done iniitally and then the having ocndition is checked. 
+
+Where clause is used for filtering Rows where as Having Clause is used for filtering groups.
+
+Suppose we want output as sales only for iPhone then we have two options'
+CMD 1: select name, SUM(num) from Sales where name like 'iPhone' group by name;
+
+CMD 2: Select name ,SUM(num) from Sales group by name having name like 'iPhone';
+
+ion first case filtering will happpen initially and then sum will be done only for iPhone
+where in second case sum of all the groups will occue and then filtering will happen.
+So HAVCING IS SLOWER
+
+
+SAVE DATATABLE DATA DIORECTLY IN ONE GO TO DATABASE VIA STORED PROCEDURE.
+There is the VS Project changes that is easy and then there are SQL Server cahanges like below.
+CREATE Type EmpTableType AS TABLE
+(
+Id int primary key,
+Name nvarchar(100),
+Address nvarchar(100)
+);
+Create Proc spInsertEmployee
+@EmpTableType EmpTableType READONLY
+AS
+BEGIN
+Insert into Emplo
+Select * FROM @EmpTableType
+END
+select * from emplo
+
+
+CREATE TAble Emplo
+(
+Id int primary key,
+Name nvarchar(100),
+Address nvarchar(100)
+)
+truncate table emplo
+
+
+GROUPING SETS
+
+Grouping sets is a new feature introduced in SQL Server 2008. Let us understand Grouping sets with an example. 
+
+We want to calculate Sum of Salary by Country and Gender. 
+
+We can very easily achieve this using a Group By query as shown below
+Select Country, Gender, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country, Gender
+
+Within the same result set we also want Sum of Salary just by Country. 
+
+To achieve the above result we could combine 2 Group By queries using UNION ALL as shown below.
+Select Country, Gender, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country, Gender
+
+UNION ALL
+
+Select Country, NULL, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country
+
+Within the same result set we also want Sum of Salary just by Gender. 
+
+We can achieve this by combining 3 Group By queries using UNION ALL as shown below
+Select Country, Gender, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country, Gender
+
+UNION ALL
+
+Select Country, NULL, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country
+
+UNION ALL
+
+Select NULL, Gender, Sum(Salary) as TotalSalary
+From Employees  
+Group By Gender
+
+Finally we also want the grand total of Salary. In this case we are not grouping on any particular column. So both Country and Gender columns will be NULL in the resultset.
+
+To achieve this we will have to combine the fourth query using UNION ALL as shown below. 
+Select Country, Gender, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country, Gender
+
+UNION ALL
+
+Select Country, NULL, Sum(Salary) as TotalSalary
+From Employees  
+Group By Country
+
+UNION ALL
+
+Select NULL, Gender, Sum(Salary) as TotalSalary
+From Employees  
+Group By Gender
+
+UNION ALL
+
+Select NULL, NULL, Sum(Salary) as TotalSalary
+From Employees 
+
+There are 2 problems with the above approach.
+The query is huge as we have combined different Group By queries using UNION ALL operator. This can grow even more if we start to add more groups
+The Employees table has to be accessed 4 times, once for every query.
+
+If we use Grouping Sets feature introduced in SQL Server 2008, the amount of T-SQL code that you have to write will be greatly reduced. The following Grouping Sets query produce the same result as the above UNION ALL query.
+
+Select Country, Gender, Sum(Salary) TotalSalary
+From Employees 
+Group BY 
+      GROUPING SETS 
+      ( 
+            (Country, Gender), -- Sum of Salary by Country and Gender
+            (Country),   -- Sum of Salary by Country
+            (Gender) ,   -- Sum of Salary by Gender
+            ()     -- Grand Total
+      )
+
+The order of the rows in the result set is not the same as in the case of UNION ALL query. To control the order use order by as shown below.
+Select Country, Gender, Sum(Salary) TotalSalary
+From Employees 
+Group BY 
+      GROUPING SETS 
+      ( 
+            (Country, Gender), -- Sum of Salary by Country and Gender
+            (Country),   -- Sum of Salary by Country
+            (Gender) ,   -- Sum of Salary by Gender
+            ()     -- Grand Total
+      )
+	 ---------GET GRAND SUM AT THE END:
+	 
+	 CMD:
+	 
+	 
+select Country, SUM(Salary)  as Salary from tmp3 group by COUNTry
+
+union all
+
+Select NULL, SUM (SALARY) from tmp3;
+
+India	3000
+UK	15500
+USA	8200
+NULL	26700
+------------------------
+
+ROLLUP in SQL Server is used to do aggregate operation on multiple levels in hierarchy. 
+
+Let us understand Rollup in SQL Server with examples. We will use the following Employees table for the examples in this video. Retrieve Salary by country along with grand total
+
+There are several ways to achieve this. The easiest way is by using Rollup with GroupBy.
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY ROLLUP(Country)
+
+India	3000
+UK	15500
+USA	8200
+NULL	26700
+
+The above query can also be rewritten as shown below
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country WITH ROLLUP
+
+We can also use UNION ALL operator along with GROUP BY
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country
+
+UNION ALL
+
+SELECT NULL, SUM(Salary) AS TotalSalary
+FROM Employees
+
+We can also use Grouping Sets to achieve the same result
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY GROUPING SETS
+(
+ (Country),
+ ()
+)
+
+Let's look at another example. 
+
+Group Salary by Country and Gender. Also compute the Subtotal for Country level and Grand Total as shown below.
+
+Using ROLLUP with GROUP BY
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY ROLLUP(Country, Gender)
+
+India	Male	3000
+India	NULL	3000
+UK	FeMale	9000
+UK	Male	6500
+UK	NULL	15500
+USA	FeMale	3200
+USA	Male	5000
+USA	NULL	8200
+NULL	NULL	26700
+
+OR
+
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country, Gender WITH ROLLUP
+
+Using UNION ALL with GROUP BY
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country, Gender
+
+UNION ALL
+
+SELECT Country, NULL, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Country
+
+UNION ALL
+
+SELECT NULL, NULL, SUM(Salary) AS TotalSalary
+FROM Employees
+
+Using GROUPING SETS
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY GROUPING SETS
+(
+ (Country, Gender),
+ (Country),
+ ()
+)
+
+ 
+ 
+ FOR DEBUGGING use the SSMS Debug option and you can debug the Store4 proc as well l;ike below
+ 
+DECLARE @TargetNumber INT
+SET @TargetNumber = 10
+EXECUTE spPrintEvenNumbers @TargetNumber
+Print 'Done'
+
+The breakpoint will go inside the sproc as well. just liek VS Debugging.
+RUNNING Total
+Select Id, Name, Salary, SUM(Salary) over (order by Id) from tblEmp;
+1	Tanuj	40000	40000
+2	Hello	4500	44500
+TRY PARSE, IIF
+select IIF(TRY_PARSE('99' as INT) IS NULL,'conversion fail', 'conversion success' )
+
+ IIF(condition,true, false)
+
+try_parse does not throw an exception if conversion fails, it simply returns NULL.
+if provided string cannot be converted into specified datatype it reuturns NULL.
+
+Try_Parse(string_value as data_type)
+
+SELECT 
+CASE WHEN TRY_PARSE('ABC' AS INT) IS NULL
+  THEN 'Conversion Failed'
+  ELSE 'Conversion Successful'
+END AS Result
+
+TRY_CONVERT AND TRY_PARSE DIfference also
+In this video we will discuss 
+TRY_CONVERT function
+Difference between CONVERT and TRY_CONVERT functions
+Difference between TRY_PARSE and TRY_CONVERT functions
+
+TRY_CONVERT function
+Introduced in SQL Server 2012
+Converts a value to the specified data type
+Returns NULL if the provided value cannot be converted to the specified data type
+If you request a conversion that is explicitly not permitted, then TRY_CONVERT fails with an error
+
+Syntax : TRY_CONVERT ( data_type, value, [style] )
+
+Style parameter is optional. The range of acceptable values is determined by the target data_type. For the list of all possible values for style parameter, please visit the following MSDN article
+https://msdn.microsoft.com/en-us/libr...
+
+Example : Convert string to INT. As the string can be converted to INT, the result will be 99 as expected.
+
+SELECT TRY_CONVERT(INT, '99') AS Result
+
+Example : Convert string to INT. The string cannot be converted to INT, so TRY_CONVERT returns NULL
+
+SELECT TRY_CONVERT(INT, 'ABC') AS Result
+
+Example : Converting an integer to XML is not explicitly permitted. so in this case TRY_CONVERT fails with an error
+
+SELECT TRY_CONVERT(XML, 10) AS Result
+
+If you want to provide a meaningful error message instead of NULL when the conversion fails, you can do so using CASE statement or IIF function.
+
+Example : Using CASE statement to provide a meaningful error message when the conversion fails.
+
+SELECT 
+CASE WHEN TRY_CONVERT(INT, 'ABC') IS NULL
+  THEN 'Conversion Failed'
+  ELSE 'Conversion Successful'
+END AS Result
+
+Output : As the conversion fails, you will now get a message 'Conversion Failed' instead of NULL
+
+Example : Using IIF function to provide a meaningful error message when the conversion fails.
+
+SELECT IIF(TRY_CONVERT(INT, 'ABC') IS NULL, 'Conversion Failed', 
+         'Conversion Successful') AS Result
+
+What is the difference between CONVERT and TRY_CONVERT
+CONVERT will result in an error if the conversion fails, where as TRY_CONVERT will return NULL instead of an error. 
+
+Since ABC cannot be converted to INT, CONVERT will return an error
+SELECT CONVERT(INT, 'ABC') AS Result
+
+Since ABC cannot be converted to INT, TRY_CONVERT will return NULL instead of an error
+SELECT TRY_CONVERT(INT, 'ABC') AS Result
+
+Example : Using TRY_CONVERT() function with table data. We will use the following Employees table for this example.
+
+SQL Script to create Employees table
+Create table Employees
+(
+ Id int primary key identity,
+ Name nvarchar(10),
+ Age nvarchar(10)
+)
+Go
+
+Insert into Employees values ('Mark', '40')
+Insert into Employees values ('John', '20')
+Insert into Employees values ('Amy', 'THIRTY')
+Insert into Employees values ('Ben', '21')
+Insert into Employees values ('Sara', 'FIFTY')
+Insert into Employees values ('David', '25')
+Go
+
+The data type of Age column is nvarchar. So string values like (THIRTY, FIFTY ) are also stored. Now, we want to write a query to convert the values in Age column to int and return along with the Employee name. Notice TRY_CONVERT function returns NULL for the rows where age cannot be converted to INT.
+
+SELECT Name, TRY_CONVERT(INT, Age) AS Age
+FROM Employees
+
+If you use CONVERT instead of TRY_CONVERT, the query fails with an error.
+
+SELECT NAME, CONVERT(INT, Age) AS Age
+FROM Employees
+
+The above query returns the following error
+Conversion failed when converting the nvarchar value 'THIRTY' to data type int.
+
+Difference between TRY_PARSE and TRY_CONVERT functions
+
+TRY_PARSE can only be used for converting from string to date/time or number data types where as TRY_CONVERT can be used for any general type conversions.
+
+For example, you can use TRY_CONVERT to convert a string to XML data type, where as you can do the same using TRY_PARSE
+
+Converting a string to XML data type using TRY_CONVERT
+SELECT TRY_CONVERT(XML, '[root][child/][/root]') AS [XML]
+
+Converting a string to XML data type using TRY_PARSE
+SELECT TRY_PARSE('[root][child/][/root]' AS XML) AS [XML]
+
+The above query will result in the following error
+Invalid data type xml in function TRY_PARSE
+
+Another difference is TRY_PARSE relies on the presence of .the .NET Framework Common Language Runtime (CLR) where as TRY_CONVERT does not.
+
+EOMONTH
+EOMONTH function
+Introduced in SQL Server 2012
+Returns the last day of the month of the specified date
+
+Syntax : EOMONTH ( start_date [, month_to_add ] )
+
+start_date : The date for which to return the last day of the month
+month_to_add : Optional. Number of months to add to the start_date. EOMONTH adds the specified number of months to start_date, and then returns the last day of the month for the resulting date.
+
+Example : Returns last day of the month November
+SELECT EOMONTH('11/20/2015') AS LastDay
+
+Example : Returns last day of the month of February from a NON-LEAP year
+SELECT EOMONTH('2/20/2015') AS LastDay
+
+Example : Returns last day of the month of February from a LEAP year
+SELECT EOMONTH('2/20/2016') AS LastDay
+
+month_to_add optional parameter can be used to add or subtract a specified number of months from the start_date, and then return the last day of the month from the resulting date.
+
+The following example adds 2 months to the start_date and returns the last day of the month from the resulting date
+SELECT EOMONTH('3/20/2016', 2) AS LastDay
+
+The following example subtracts 1 month from the start_date and returns the last day of the month from the resulting date
+SELECT EOMONTH('3/20/2016', -1) AS LastDay
+
+Using EOMONTH function with table data. We will use the following Employees table for this example.
+
+SQL Script to create Employees table
+Create table Employees
+(
+ Id int primary key identity,
+ Name nvarchar(10),
+ DateOfBirth date
+)
+Go
+
+Insert into Employees values ('Mark', '01/11/1980')
+Insert into Employees values ('John', '12/12/1981')
+Insert into Employees values ('Amy', '11/21/1979')
+Insert into Employees values ('Ben', '05/14/1978')
+Insert into Employees values ('Sara', '03/17/1970')
+Insert into Employees values ('David', '04/05/1978')
+Go
+
+The following example returns the last day of the month from the DateOfBirth of every employee.
+SELECT Name, DateOfBirth, EOMONTH(DateOfBirth) AS LastDay
+FROM Employees
+
+If you want just the last day instead of the full date, you can use DATEPART function
+SELECT Name, DateOfBirth, DATEPART(DD,EOMONTH(DateOfBirth)) AS LastDay
+FROM Employees
+
+IDENTITY
+Making aq columns Identity auto increment it and we dont need to supply value for it while inserting other values.
+Default
+CREATE TABLE Orders (
+    ID int NOT NULL,
+    OrderNumber int NOT NULL,
+    OrderDate date DEFAULT GETDATE()
+);
+insert into Orders (ID, OrderNumber)values(1,2)
+
+select * from Orders;
+1	2	2018-03-10 // AUTOMATICALLY A DEFUALT DATE IS PROVBIDED IF NTHING IS INSERTED
+
+GUID:
+
+It is a 16 byte binary data type that is unique across databases tables and servers.
+CMD: Declare @id UNIQUEIDENTIFIER
+Set @id = NEWID()
+Select @id
+
+Problem if we don't use the GUID 
+
+Create table IndiaDB 
+( 
+ Id int primary key identity,
+ Name nvarchar(100)
+ );
+ Insert into IndiaDB values('Tanuj');
+ Insert into IndiaDB values ('Rajesh');
+ Insert into IndiaDB values('Rohit');
+ Insert into IndiaDB values('Jagdish');
+ Insert into IndiaDB values('Mallu');
+
+ select * from IndiaDB
+
+
+
+ Use Pluto
+ Create table USADB 
+( 
+ Id int primary key identity,
+ Name nvarchar(100)
+ );
+ Insert into USADB values('Jannie');
+ Insert into USADB values ('Roonie');
+ Insert into USADB values('Danny');
+ Insert into USADB values('Janet');
+ Insert into USADB values('Carla');
+
+
+ Select * from Sample.dbo.IndiaDB	
+ UNION ALL
+ Select * from Pluto.dbo.USADB;
+
+ Create table Customers
+ (
+ Id int primary key,
+ Name nvarchar(100)
+ )
+ Insert into Customers
+ 
+ Select * from Sample.dbo.IndiaDB	
+ UNION ALL
+ Select * from Pluto.dbo.USADB;
+ 
+ Error: Msg 2627, Level 14, State 1, Line 38
+Violation of PRIMARY KEY constraint 'PK__Customer__3214EC077AD66FA2'. Cannot insert duplicate key in object 'dbo.Customers'. The duplicate key value is (1).
+The statement has been terminated.
+problem is arising because both table are in differnt databases and also they have id same.
+
+
+Working Example:
+Create table IndiaDB2
+( 
+ Id uniqueidentifier primary key default newid(),
+ Name nvarchar(100)
+ );
+ Insert into IndiaDB2 values(default,'Tanuj');
+ Insert into IndiaDB2 values (default,'Rajesh');
+ Insert into IndiaDB2 values(default,'Rohit');
+ Insert into IndiaDB2 values(default,'Jagdish');
+ Insert into IndiaDB2 values(default,'Mallu');
+
+ select * from IndiaDB2
+
+
+
+ Use Pluto
+ Create table USADB2 
+( 
+ Id uniqueidentifier primary key default newid(),
+ Name nvarchar(100)
+ );
+ Insert into USADB2 values(default,'Jannie');
+ Insert into USADB2 values (default, 'Roonie');
+ Insert into USADB2 values(default, 'Danny');
+ Insert into USADB2 values(default, 'Janet');
+ Insert into USADB2 values(default, 'Carla');
+
+
+ Select * from Sample.dbo.IndiaDB2	
+ UNION ALL
+ Select * from Pluto.dbo.USADB2;
+
+ Create table Customer3
+ (
+ Id uniqueidentifier  primary key,
+ Name nvarchar(100)
+ )
+ Insert into Customer3
+ 
+ Select * from Sample.dbo.IndiaDB2	
+ UNION ALL
+ Select * from Pluto.dbo.USADB2;
+
+ select * from Customer3
+ 
+ Advantage:
+ Unique across server,table, databse
+ Disadvantage:
+ Size
+ 
+ How to check if a GUID is NULL : Checking if a GUID is null is straight forward in SQL Server. Just use IS NULL keywords as shown below.
+
+Declare @MyGuid Uniqueidentifier
+
+If(@MyGuid IS NULL)
+Begin
+     Print 'Guid is null'
+End
+Else
+Begin
+     Print 'Guid is not null'
+End
+
+In the above example, since @MyGuid is just declared and not initialised, it prints the message "Guid is null"
+
+Now let's say, if a GUID variable is NULL, then we want to initialise that GUID variable with a new GUID value. If it's not NULL, then we want to retain it's value. One way to do this is by using an IF condition as shown below.
+
+Declare @MyGuid UniqueIdentifier
+
+If(@MyGuid IS NULL)
+Begin
+     Set @MyGuid = NEWID()
+End
+
+Select @MyGuid
+
+We can achieve exactly the same thing by using ISNULL() function. The advantage of using ISNULL() function is that, it reduces the amount of code we have to write.
+
+Declare @MyGuid UniqueIdentifier
+Select ISNULL(@MyGuid, NewID())
+
+  
 
 
 

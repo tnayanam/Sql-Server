@@ -19,7 +19,6 @@ namespace DeadLock
             if (attemptsLeft > 0)
             {
 
-
                 try
                 {
                     string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
