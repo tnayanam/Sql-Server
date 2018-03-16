@@ -1331,9 +1331,42 @@ CMD: Drop Table Temp;
 
 // above trigger will work across all the databases.
 
-DIsbale a trigger:
+Disbale a trigger:
 
-CMD: Disable TRIGGER tr_DDL_OnCreate ON ALL SERVER    
+CMD: Disable TRIGGER tr_DDL_OnCreate ON ALL SERVER  
+
+SELECT INTO Stuff
+Select into selects data from one table and insert data into a NEW table. Note that if tables already exists then backup wont be created. becasuee bwlow command tries t buikd new table
+if table already exists then we will get error.
+Usage:
+1. Copy all rows and columns from an existing table to a new table. genenrally helps in creating back ups.
+Select * from Employee;
+
+Select * into TblBackUp from Employee;  //note that this tblbackUp doe snot exist already. this single command creates the table and add all the columns as well as the rows.
+
+select * from tblBackUp;
+
+2. Select * into Sample1.dbo.TblE from Employee;
+Now this will craete the same back up but in a differnt database.
+
+3. In this case onle the name columns will be backedup.
+ CMD: select Name into tblOnlyName from tblEmployee; 
+ 
+ 4. Now only some rows back up
+ CMD: 
+select Name into tblOnlyNameWithS from tblEmployee where Name like '%S%';
+5. get Tabular data back from Sproc.
+Create proc sp_InsertInto 
+@productName nvarchar(100)
+As
+Begin
+Select * from tblInventory where  ProductName like @productName + '%'
+End
+
+/// it will return multiple rows.
+
+
+
 
 
 
