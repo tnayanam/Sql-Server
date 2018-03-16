@@ -2007,6 +2007,22 @@ We can achieve exactly the same thing by using ISNULL() function. The advantage 
 Declare @MyGuid UniqueIdentifier
 Select ISNULL(@MyGuid, NewID())
 
+// How to print a  value and very helpful during debugging of a stored procedure.
+Create proc spAddEmployee
+@Name nvarchar(50),
+@Gender nvarchar(50),
+@Salary int,
+@EmployeeId int Out
+AS
+BEGIN
+Insert into tblEmployees values(@Name, @Gender, @Salary)
+Select @EmployeeId  = SCOPE_IDENTITY()
+END
+
+Declare @EmpId int
+exec spAddEmployee 'AakanshaTrue', 'Female', 4800,@EmpId Out
+Print @EmpId
+
   
 
 
